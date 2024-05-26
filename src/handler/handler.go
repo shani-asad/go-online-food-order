@@ -12,3 +12,8 @@ type AuthHandlerInterface interface {
 type ImageHandlerInterface interface {
 	UploadImage(c *gin.Context)
 }
+
+type MerchantHandlerInterface interface {
+	CreateMerchant(c *gin.Context)
+	GetMerchants(c *gin.Context)
+}
