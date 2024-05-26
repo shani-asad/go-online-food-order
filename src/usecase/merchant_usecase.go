@@ -6,11 +6,11 @@ import (
 )
 
 type MerchantUsecase struct {
-	helper helpers.HelperInterface
+	helper helpers.AuthHelperInterface
 }
 
 func NewMerchantUsecase(
-	helper helpers.HelperInterface) MerchantUsecaseInterface {
+	helper helpers.AuthHelperInterface) MerchantUsecaseInterface {
 	return &MerchantUsecase{helper}
 }
 

@@ -9,7 +9,7 @@ import (
 )
 
 type Middleware struct {
-	helper helpers.HelperInterface
+	helper helpers.AuthHelperInterface
 }
 
 type MiddlewareInterface interface {
@@ -17,7 +17,7 @@ type MiddlewareInterface interface {
 	RoleMiddleware(role string) gin.HandlerFunc
 }
 
-func NewMiddleware(helper helpers.HelperInterface) MiddlewareInterface {
+func NewMiddleware(helper helpers.AuthHelperInterface) MiddlewareInterface {
 	return &Middleware{helper}
 }
 
@@ -53,7 +53,7 @@ func (m *Middleware) AuthMiddleware(c *gin.Context) {
 func (m *Middleware) RoleMiddleware(requiredRole string) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		role, exists := c.Get("user_role")
-		
+
 		if !exists || role != requiredRole {
 			c.JSON(http.StatusBadRequest, "you don't have permission to access this resource")
 			c.Abort()

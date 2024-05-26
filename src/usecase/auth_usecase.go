@@ -14,12 +14,12 @@ import (
 
 type AuthUsecase struct {
 	iUserRepository repository.UserRepositoryInterface
-	helper          helpers.HelperInterface
+	helper          helpers.AuthHelperInterface
 }
 
 func NewAuthUsecase(
 	iUserRepository repository.UserRepositoryInterface,
-	helper helpers.HelperInterface) AuthUsecaseInterface {
+	helper helpers.AuthHelperInterface) AuthUsecaseInterface {
 	return &AuthUsecase{iUserRepository, helper}
 }
 
@@ -32,7 +32,7 @@ func (u *AuthUsecase) Register(request dto.RequestCreateUser, role string) (toke
 	data := database.User{
 		Email:     request.Email,
 		Password:  string(hash),
-		Username:      request.Username,
+		Username:  request.Username,
 		Role:      role,
 		CreatedAt: time.Now(),
 	}
@@ -57,7 +57,7 @@ func (u *AuthUsecase) Login(request dto.RequestAuth, role string) (token string,
 		return "", 404
 	}
 
-	if (userData.Role != role) {
+	if userData.Role != role {
 		return "", 400
 	}
 
@@ -84,15 +84,15 @@ func (u *AuthUsecase) verifyPassword(password, passwordHash string) bool {
 func (u *AuthUsecase) GetUserByUsername(username string) (bool, error) {
 	_, err := u.iUserRepository.GetUserByUsername(context.TODO(), username)
 	if err != nil {
-    return false, err
-  }
+		return false, err
+	}
 	return true, nil
 }
 
 func (u *AuthUsecase) GetExistingUserInTheRoleByEmail(email, role string) (bool, error) {
 	_, err := u.iUserRepository.GetExistingUserInTheRoleByEmail(context.TODO(), email, role)
 	if err != nil {
-    return false, err
-  }
+		return false, err
+	}
 	return true, nil
 }
