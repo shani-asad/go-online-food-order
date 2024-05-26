@@ -9,12 +9,12 @@ import (
 	"github.com/golang-jwt/jwt"
 )
 
-type Helpers struct {
+type AuthHelper struct {
 	SecretKey string
 }
 
 func NewAuthHelper() AuthHelperInterface {
-	return &Helpers{}
+	return &AuthHelper{}
 }
 
 // Claims structure to hold JWT claims
@@ -23,7 +23,7 @@ type Claims struct {
 	jwt.StandardClaims
 }
 
-func (h *Helpers) GenerateToken(userID, role string) (string, error) {
+func (h *AuthHelper) GenerateToken(userID, role string) (string, error) {
 	key := []byte(os.Getenv("JWT_SECRET"))
 
 	claims := jwt.MapClaims{
@@ -38,7 +38,7 @@ func (h *Helpers) GenerateToken(userID, role string) (string, error) {
 }
 
 // ValidateJWT validates the JWT token
-func (h *Helpers) ValidateJWT(tokenString string) (jwt.MapClaims, error) {
+func (h *AuthHelper) ValidateJWT(tokenString string) (jwt.MapClaims, error) {
 	key := []byte(os.Getenv("JWT_SECRET"))
 
 	token, err := jwt.ParseWithClaims(tokenString, &Claims{}, func(token *jwt.Token) (interface{}, error) {
