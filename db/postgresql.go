@@ -2,8 +2,8 @@ package db
 
 import (
 	"database/sql"
-	"health-record/model/properties"
 	"log"
+	"online-food/model/properties"
 
 	_ "github.com/lib/pq"
 )

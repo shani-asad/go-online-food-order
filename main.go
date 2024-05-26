@@ -2,22 +2,23 @@ package main
 
 import (
 	"fmt"
-	"health-record/app/server"
-	"health-record/db"
-	"health-record/helpers"
-	"health-record/model/properties"
-	"health-record/src/handler"
-	"health-record/src/middleware"
-	"health-record/src/repository"
-	"health-record/src/usecase"
+	"log"
+	"online-food/app/server"
+	"online-food/db"
+	"online-food/helpers"
+	"online-food/model/properties"
+	"online-food/src/handler"
+	"online-food/src/middleware"
+	"online-food/src/repository"
+	"online-food/src/usecase"
 
 	// "log"
 	"os"
 
 	"github.com/gin-gonic/gin"
-	// "github.com/golang-migrate/migrate/v4"
-	// _ "github.com/golang-migrate/migrate/v4/database/postgres"
-	// _ "github.com/golang-migrate/migrate/v4/source/file"
+	"github.com/golang-migrate/migrate/v4"
+	_ "github.com/golang-migrate/migrate/v4/database/postgres"
+	_ "github.com/golang-migrate/migrate/v4/source/file"
 )
 
 func main() {
@@ -51,16 +52,16 @@ func main() {
 
 	db := db.InitPostgreDB(postgreConfig)
 
-	// //run migrations
-	// m, err := migrate.New(os.Getenv("MIGRATION_PATH"), os.Getenv("DATABASE_URL"))
-	// if err != nil {
-	// 	log.Fatal("Error creating migration instance: ", err)
-	// }
+	//run migrations
+	m, err := migrate.New(os.Getenv("MIGRATION_PATH"), os.Getenv("DATABASE_URL"))
+	if err != nil {
+		log.Fatal("Error creating migration instance: ", err)
+	}
 
-	// //Run the migration up to the latest version
-	// if err := m.Up(); err != nil && err != migrate.ErrNoChange {
-	// 	log.Fatal("Error applying migrations:", err)
-	// }
+	//Run the migration up to the latest version
+	if err := m.Up(); err != nil && err != migrate.ErrNoChange {
+		log.Fatal("Error applying migrations:", err)
+	}
 
 	fmt.Println("Migration successfully applied")
 
@@ -71,15 +72,12 @@ func main() {
 
 	// REPOSITORY
 	userRepository := repository.NewUserRepository(db)
-	nurseRepository := repository.NewNurseRepository(db)
 
 	// USECASE
 	authUsecase := usecase.NewAuthUsecase(userRepository, helper)
-	nurseUscase := usecase.NewNurseUsecase(nurseRepository)
 
 	// HANDLER
 	authHandler := handler.NewAuthHandler(authUsecase)
-	nurseHandler := handler.NewNurseHandler(nurseUscase)
 	imageHandler := handler.NewImageHandler()
 
 	// ROUTE
@@ -89,24 +87,20 @@ func main() {
 		})
 	})
 
-	r.POST("/v1/user/it/register", authHandler.Register)
-	r.POST("/v1/user/it/login", authHandler.Login)
-	r.POST("/v1/user/nurse/login", authHandler.LoginNurse)
+	r.POST("/admin/register", authHandler.Register)
+	r.POST("/admin/login", authHandler.Login)
+	r.POST("/user/register", authHandler.Register)
+	r.POST("/user/login", authHandler.Login)
 
 	authorized := r.Group("")
 	authorized.Use(middleware.AuthMiddleware)
 
 	// IT user only
-	itAuthorized := authorized.Group("")
-	itAuthorized.Use(middleware.RoleMiddleware("it"))
-	itAuthorized.POST("/v1/user/nurse/register", nurseHandler.RegisterNurse)
-	itAuthorized.GET("/v1/user", nurseHandler.GetUsers)
-	itAuthorized.PUT("/v1/user/nurse/:userId", nurseHandler.UpdateNurse)
-	itAuthorized.DELETE("/v1/user/nurse/:userId", nurseHandler.DeleteNurse)
-	itAuthorized.POST("/v1/user/nurse/:userId/access", nurseHandler.AddAccess)
+	// adminAuthorized := authorized.Group("")
+	// adminAuthorized.Use(middleware.RoleMiddleware("admin"))
 
 	// upload image
-	authorized.POST("/v1/image", imageHandler.UploadImage)
+	authorized.POST("/image", imageHandler.UploadImage)
 
 	r.Run()
 }

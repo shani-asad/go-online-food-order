@@ -1,8 +1,8 @@
 package middleware
 
 import (
-	"health-record/helpers"
 	"net/http"
+	"online-food/helpers"
 	"strings"
 
 	"github.com/gin-gonic/gin"

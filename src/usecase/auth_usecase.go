@@ -2,12 +2,11 @@ package usecase
 
 import (
 	"context"
-	"errors"
 	"fmt"
-	"health-record/helpers"
-	"health-record/model/database"
-	"health-record/model/dto"
-	"health-record/src/repository"
+	"online-food/helpers"
+	"online-food/model/database"
+	"online-food/model/dto"
+	"online-food/src/repository"
 	"time"
 
 	"golang.org/x/crypto/bcrypt"
@@ -24,16 +23,17 @@ func NewAuthUsecase(
 	return &AuthUsecase{iUserRepository, helper}
 }
 
-func (u *AuthUsecase) Register(request dto.RequestCreateUser) (token string, userId string, err error) {
+func (u *AuthUsecase) Register(request dto.RequestCreateUser, role string) (token string, err error) {
 	hash, err := bcrypt.GenerateFromPassword([]byte(request.Password), bcrypt.MinCost)
 	if err != nil {
-		return "", "", err
+		return "", err
 	}
 
 	data := database.User{
-		Nip:     request.Nip,
+		Email:     request.Email,
 		Password:  string(hash),
-		Name:      request.Name,
+		Username:      request.Username,
+		Role:      role,
 		CreatedAt: time.Now(),
 	}
 
@@ -41,20 +41,24 @@ func (u *AuthUsecase) Register(request dto.RequestCreateUser) (token string, use
 
 	fmt.Println(err)
 
-	userData, err := u.iUserRepository.GetUserByNIP(context.TODO(), request.Nip)
+	userData, err := u.iUserRepository.GetUserByUsername(context.TODO(), request.Username)
 
 	fmt.Println(userData)
 
-	token, _ = u.helper.GenerateToken(userData.Id, userData.Role)
+	token, _ = u.helper.GenerateToken(userData.Username, userData.Role)
 
-	return token, userData.Id, err
+	return token, err
 }
 
-func (u *AuthUsecase) Login(request dto.RequestAuth) (token string, user database.User, err error) {
+func (u *AuthUsecase) Login(request dto.RequestAuth, role string) (token string, status int) {
 	// check creds on database
-	userData, err := u.iUserRepository.GetUserByNIP(context.TODO(), request.Nip)
+	userData, err := u.iUserRepository.GetUserByUsername(context.TODO(), request.Username)
 	if err != nil {
-		return "", database.User{}, errors.New("user not found")
+		return "", 404
+	}
+
+	if (userData.Role != role) {
+		return "", 400
 	}
 
 	fmt.Println(userData)
@@ -62,31 +66,12 @@ func (u *AuthUsecase) Login(request dto.RequestAuth) (token string, user databas
 	// check the password
 	isValid := u.verifyPassword(request.Password, userData.Password)
 	if !isValid {
-		return "", database.User{}, errors.New("wrong password")
+		return "", 400
 	}
 
-	token, _ = u.helper.GenerateToken(userData.Id, userData.Role)
+	token, _ = u.helper.GenerateToken(userData.Username, userData.Role)
 
-	return token, userData, nil
-}
-
-func (u *AuthUsecase) LoginNurse(request dto.RequestAuth) (token string, user database.User, err error) {
-	userData, err := u.iUserRepository.GetUserByNIP(context.TODO(), request.Nip)
-	if err != nil {
-		return "", database.User{}, errors.New("user not found")
-	}
-
-	fmt.Println(userData)
-
-	// check the password
-	isValid := u.verifyPassword(request.Password, userData.Password)
-	if !isValid {
-		return "", database.User{}, errors.New("wrong password")
-	}
-
-	token, _ = u.helper.GenerateToken(userData.Id, userData.Role)
-
-	return token, userData, nil
+	return token, 200
 }
 
 func (u *AuthUsecase) verifyPassword(password, passwordHash string) bool {
@@ -96,8 +81,16 @@ func (u *AuthUsecase) verifyPassword(password, passwordHash string) bool {
 	return err == nil
 }
 
-func (u *AuthUsecase) GetUserByNIP(nip int64) (bool, error) {
-	_, err := u.iUserRepository.GetUserByNIP(context.TODO(), nip)
+func (u *AuthUsecase) GetUserByUsername(username string) (bool, error) {
+	_, err := u.iUserRepository.GetUserByUsername(context.TODO(), username)
+	if err != nil {
+    return false, err
+  }
+	return true, nil
+}
+
+func (u *AuthUsecase) GetExistingUserInTheRoleByEmail(email, role string) (bool, error) {
+	_, err := u.iUserRepository.GetExistingUserInTheRoleByEmail(context.TODO(), email, role)
 	if err != nil {
     return false, err
   }
