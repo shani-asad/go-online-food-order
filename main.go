@@ -72,13 +72,16 @@ func main() {
 
 	// REPOSITORY
 	userRepository := repository.NewUserRepository(db)
+	merchantRepository := repository.NewMerchantRepository(db)
 
 	// USECASE
 	authUsecase := usecase.NewAuthUsecase(userRepository, helper)
+	merchantUsecase := usecase.NewMerchantUsecase(merchantRepository, helper)
 
 	// HANDLER
 	authHandler := handler.NewAuthHandler(authUsecase)
 	imageHandler := handler.NewImageHandler()
+	merchantHandler := handler.NewMerchantHandler(merchantUsecase)
 
 	// ROUTE
 	r.GET("/health", func(c *gin.Context) {
@@ -96,8 +99,10 @@ func main() {
 	authorized.Use(middleware.AuthMiddleware)
 
 	// IT user only
-	// adminAuthorized := authorized.Group("")
-	// adminAuthorized.Use(middleware.RoleMiddleware("admin"))
+	adminAuthorized := authorized.Group("")
+	adminAuthorized.Use(middleware.RoleMiddleware("admin"))
+	r.POST("/admin/merchants", merchantHandler.CreateMerchant)
+	r.GET("/admin/merchants", merchantHandler.GetMerchants)
 
 	// upload image
 	authorized.POST("/image", imageHandler.UploadImage)
