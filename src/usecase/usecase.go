@@ -10,3 +10,7 @@ type AuthUsecaseInterface interface {
 	GetUserByUsername(username string) (exists bool, err error)
 	GetExistingUserInTheRoleByEmail(email, role string) (exists bool, err error)
 }
+
+type MerchantUsecaseInterface interface {
+	CreateMerchant(request dto.RequestCreateMerchant) (dto.ResponseCreateMerchant, error)
+}
