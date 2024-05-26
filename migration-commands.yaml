@@ -1,0 +1,12 @@
+UP
+migrate -database "postgres://postgres:postgres@localhost:5432/halo-suster?sslmode=disable" -path ./db/migrations -verbose up
+
+=============================================================
+
+DOWN
+migrate -database "postgres://postgres:postgres@localhost:5432/halo-suster?sslmode=disable" -path ./db/migrations -verbose down
+
+=============================================================
+
+DROP
+migrate -database "postgres://postgres:postgres@localhost:5432/halo-suster?sslmode=disable" -path ./db/migrations -verbose drop
