@@ -11,12 +11,16 @@ type RequestCreateUser struct {
 	Username string `json:"username"`
 }
 
+type RequestLocation struct {
+	Lat  float64 `json:"lat" validate:"required"`
+	Long float64 `json:"long" validate:"required"`
+}
+
 type RequestCreateMerchant struct {
-	Name             string  `json:"name" validate:"required,min=2,max=30"`
-	MerchantCategory string  `json:"merchantCategory" validate:"required,oneof=SmallRestaurant MediumRestaurant LargeRestaurant MerchandiseRestaurant BoothKiosk ConvenienceStore"`
-	ImageUrl         string  `json:"imageUrl" validate:"required,url"`
-	LocationLat      float64 `json:"lat" validate:"required"`
-	LocationLong     float64 `json:"long" validate:"required"`
+	Name             string          `json:"name" validate:"required,min=2,max=30"`
+	MerchantCategory string          `json:"merchantCategory" validate:"required,oneof=SmallRestaurant MediumRestaurant LargeRestaurant MerchandiseRestaurant BoothKiosk ConvenienceStore"`
+	ImageUrl         string          `json:"imageUrl" validate:"required,completeURL"`
+	Location         RequestLocation `json:"location" validate:"required"`
 }
 
 type RequestGetMerchant struct {
