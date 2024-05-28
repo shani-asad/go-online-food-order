@@ -65,18 +65,18 @@ func main() {
 
 	fmt.Println("Migration successfully applied")
 
-	helper := helpers.NewHelper()
+	authHelper := helpers.NewAuthHelper()
 
 	// MIDDLEWARE
-	middleware := middleware.NewMiddleware(helper)
+	middleware := middleware.NewMiddleware(authHelper)
 
 	// REPOSITORY
 	userRepository := repository.NewUserRepository(db)
 	merchantRepository := repository.NewMerchantRepository(db)
 
 	// USECASE
-	authUsecase := usecase.NewAuthUsecase(userRepository, helper)
-	merchantUsecase := usecase.NewMerchantUsecase(merchantRepository, helper)
+	merchantUsecase := usecase.NewMerchantUsecase(merchantRepository)
+	authUsecase := usecase.NewAuthUsecase(userRepository, authHelper)
 
 	// HANDLER
 	authHandler := handler.NewAuthHandler(authUsecase)
@@ -106,6 +106,9 @@ func main() {
 
 	// upload image
 	authorized.POST("/image", imageHandler.UploadImage)
+
+	// purchase
+	// authorized.GET("/merchants/nearby/:lat/:long". purchaseHandler.getNearbyMerchants)
 
 	r.Run()
 }

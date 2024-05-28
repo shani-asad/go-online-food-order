@@ -2,7 +2,6 @@ package usecase
 
 import (
 	"context"
-	"online-food/helpers"
 	"online-food/model/database"
 	"online-food/model/dto"
 	"online-food/src/repository"
@@ -12,13 +11,11 @@ import (
 
 type MerchantUsecase struct {
 	merchantRepository repository.MerchantRepositoryInterface
-	helper             helpers.HelperInterface
 }
 
 func NewMerchantUsecase(
-	merchantRepository repository.MerchantRepositoryInterface,
-	helper helpers.HelperInterface) MerchantUsecaseInterface {
-	return &MerchantUsecase{merchantRepository, helper}
+	merchantRepository repository.MerchantRepositoryInterface) MerchantUsecaseInterface {
+	return &MerchantUsecase{merchantRepository}
 }
 
 func (u *MerchantUsecase) CreateMerchant(request dto.RequestCreateMerchant) (res dto.ResponseCreateMerchant, err error) {

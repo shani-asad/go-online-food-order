@@ -9,12 +9,12 @@ import (
 	"github.com/golang-jwt/jwt"
 )
 
-type Helpers struct{
+type AuthHelper struct {
 	SecretKey string
 }
 
-func NewHelper() HelperInterface {
-	return &Helpers{}
+func NewAuthHelper() AuthHelperInterface {
+	return &AuthHelper{}
 }
 
 // Claims structure to hold JWT claims
@@ -23,14 +23,14 @@ type Claims struct {
 	jwt.StandardClaims
 }
 
-func (h *Helpers) GenerateToken(userID, role string) (string, error) {
+func (h *AuthHelper) GenerateToken(userID, role string) (string, error) {
 	key := []byte(os.Getenv("JWT_SECRET"))
 
 	claims := jwt.MapClaims{
-		"sub": userID,
+		"sub":  userID,
 		"role": role,
-		"exp": time.Now().Add(time.Hour * 8).Unix(),
-		"iat": time.Now().Unix(),
+		"exp":  time.Now().Add(time.Hour * 8).Unix(),
+		"iat":  time.Now().Unix(),
 	}
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
@@ -38,7 +38,7 @@ func (h *Helpers) GenerateToken(userID, role string) (string, error) {
 }
 
 // ValidateJWT validates the JWT token
-func (h *Helpers) ValidateJWT(tokenString string) (jwt.MapClaims, error) {
+func (h *AuthHelper) ValidateJWT(tokenString string) (jwt.MapClaims, error) {
 	key := []byte(os.Getenv("JWT_SECRET"))
 
 	token, err := jwt.ParseWithClaims(tokenString, &Claims{}, func(token *jwt.Token) (interface{}, error) {
@@ -56,10 +56,10 @@ func (h *Helpers) ValidateJWT(tokenString string) (jwt.MapClaims, error) {
 	if claims, ok := token.Claims.(*Claims); ok && token.Valid {
 		// Convert custom claims to jwt.MapClaims
 		mapClaims := jwt.MapClaims{
-			"role":     claims.Role,
-			"sub":      claims.Subject,
-			"exp":      claims.ExpiresAt,
-			"iat":      claims.IssuedAt,
+			"role": claims.Role,
+			"sub":  claims.Subject,
+			"exp":  claims.ExpiresAt,
+			"iat":  claims.IssuedAt,
 		}
 		return mapClaims, nil
 	}
