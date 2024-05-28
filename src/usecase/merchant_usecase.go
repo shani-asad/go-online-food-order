@@ -38,3 +38,31 @@ func (u *MerchantUsecase) CreateMerchant(request dto.RequestCreateMerchant) (res
 
 	return res, err
 }
+
+func (u *MerchantUsecase) GetMerchants(request dto.RequestGetMerchant) (res dto.ResponseGetMerchants, err error) {
+	data, err := u.merchantRepository.GetMerchants(context.TODO(), request)
+	if err != nil {
+		return res, err
+	}
+
+	for _, v := range data {
+		merchant := dto.ResponseMerchant{
+			MerchantId:       v.ID,
+			Name:             v.Name,
+			MerchantCategory: v.MerchantCategory,
+			ImageUrl:         v.ImageUrl,
+			Location: dto.Location{
+				Lat:  v.LocationLat,
+				Long: v.LocationLong,
+			},
+			CreatedAt: v.CreatedAt,
+		}
+
+		res.Data = append(res.Data, merchant)
+	}
+	res.Meta.Limit = *request.Limit
+	res.Meta.Offset = *request.Offset
+	res.Meta.Total = len(res.Data)
+
+	return res, err
+}

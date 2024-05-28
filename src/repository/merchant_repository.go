@@ -3,6 +3,7 @@ package repository
 import (
 	"context"
 	"database/sql"
+	"fmt"
 	"online-food/model/database"
 	"online-food/model/dto"
 )
@@ -44,5 +45,59 @@ func (r *MerchantRepository) CreateMerchant(ctx context.Context, data database.M
 }
 
 func (r *MerchantRepository) GetMerchants(ctx context.Context, filter dto.RequestGetMerchant) (response []database.Merchant, err error) {
-	return response, err
+	query := `SELECT id, name, merchant_category, image_url, location_lat, location_long, created_at, updated_at FROM merchants WHERE 1=1`
+	args := []interface{}{}
+
+	if filter.MerchantID != nil {
+		query += fmt.Sprintf(" AND id = %v", *filter.MerchantID)
+	}
+	if filter.Name != nil {
+		query += fmt.Sprintf(" AND name LIKE '%s'", *filter.Name)
+	}
+	if filter.MerchantCategory != nil {
+		query += fmt.Sprintf(" AND merchant_category = '%s'", *filter.MerchantCategory)
+	}
+	if filter.CreatedAt != nil {
+		if *filter.CreatedAt == "asc" {
+			query += " ORDER BY created_at ASC"
+		} else if *filter.CreatedAt == "desc" {
+			query += " ORDER BY created_at DESC"
+		}
+	}
+	if filter.Limit != nil {
+		query += fmt.Sprintf(" LIMIT %d", *filter.Limit)
+	}
+	if filter.Offset != nil {
+		query += fmt.Sprintf(" OFFSET %d", *filter.Offset)
+	}
+
+	rows, err := r.db.QueryContext(ctx, query, args...)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var merchants []database.Merchant
+	for rows.Next() {
+		var merchant database.Merchant
+		if err := rows.Scan(
+			&merchant.ID,
+			&merchant.Name,
+			&merchant.MerchantCategory,
+			&merchant.ImageUrl,
+			&merchant.LocationLat,
+			&merchant.LocationLong,
+			&merchant.CreatedAt,
+			&merchant.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		merchants = append(merchants, merchant)
+	}
+
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+
+	return merchants, nil
 }

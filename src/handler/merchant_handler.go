@@ -2,6 +2,7 @@ package handler
 
 import (
 	"fmt"
+	"log"
 	"online-food/model/dto"
 	"online-food/src/usecase"
 	"regexp"
@@ -62,9 +63,24 @@ func (h *MerchantHandler) CreateMerchant(c *gin.Context) {
 }
 
 func (h *MerchantHandler) GetMerchants(c *gin.Context) {
-	c.JSON(200, gin.H{
-		"tes": "",
-	})
+	var param dto.RequestGetMerchant
+
+	err := c.ShouldBind(&param)
+	if err != nil {
+		log.Println("Merchant bad request (ShouldBindJSON) >> ", err)
+		c.JSON(400, gin.H{"status": "bad request", "message": err.Error()})
+		return
+	}
+
+	res, err := h.iMerchantUsecase.GetMerchants(param)
+	if err != nil {
+		c.JSON(500, dto.ResponseStatusAndMessage{
+			Status:  "error",
+			Message: err.Error(),
+		})
+	}
+
+	c.JSON(200, res)
 }
 
 func validateCompleteURL(fl validator.FieldLevel) bool {

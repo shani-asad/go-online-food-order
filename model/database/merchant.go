@@ -3,6 +3,7 @@ package database
 import "time"
 
 type Merchant struct {
+	ID               int
 	Name             string
 	MerchantCategory string
 	ImageUrl         string

@@ -13,4 +13,5 @@ type AuthUsecaseInterface interface {
 
 type MerchantUsecaseInterface interface {
 	CreateMerchant(request dto.RequestCreateMerchant) (dto.ResponseCreateMerchant, error)
+	GetMerchants(request dto.RequestGetMerchant) (dto.ResponseGetMerchants, error)
 }
