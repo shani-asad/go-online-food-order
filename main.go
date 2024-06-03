@@ -104,6 +104,9 @@ func main() {
 	r.POST("/admin/merchants", merchantHandler.CreateMerchant)
 	r.GET("/admin/merchants", merchantHandler.GetMerchants)
 
+	r.POST("/admin/merchants/:id/items", merchantHandler.CreateMerchantItem)
+	r.GET("/admin/merchants/:id/items", merchantHandler.GetMerchantItems)
+
 	// upload image
 	authorized.POST("/image", imageHandler.UploadImage)
 

@@ -16,4 +16,6 @@ type ImageHandlerInterface interface {
 type MerchantHandlerInterface interface {
 	CreateMerchant(c *gin.Context)
 	GetMerchants(c *gin.Context)
+	CreateMerchantItem(c *gin.Context)
+	GetMerchantItems(c *gin.Context)
 }

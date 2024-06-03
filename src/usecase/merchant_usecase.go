@@ -63,3 +63,45 @@ func (u *MerchantUsecase) GetMerchants(request dto.RequestGetMerchant) (res dto.
 
 	return res, err
 }
+
+func (u *MerchantUsecase) CreateMerchantItem(request dto.RequestCreateMerchantItem) (res dto.ResponseCreateMerchantItem, err error) {
+	data := database.Item{
+		Name:            request.Name,
+		ProductCategory: request.ProductCategory,
+		Price:           int(request.Price),
+		ImageUrl:        request.ImageUrl,
+		CreatedAt:       time.Now(),
+	}
+
+	id, err := u.merchantRepository.CreateMerchantItem(context.TODO(), data)
+	if err == nil || id != 0 {
+		res.ItemID = strconv.Itoa(id)
+	}
+
+	return res, err
+}
+
+func (u *MerchantUsecase) GetMerchantItems(request dto.RequestGetMerchantItems) (res dto.ResponseGetMerchantItems, err error) {
+	data, err := u.merchantRepository.GetMerchantItems(context.TODO(), request)
+	if err != nil {
+		return res, err
+	}
+
+	for _, v := range data {
+		merchant := dto.ResponseGetItems{
+			ItemID:          strconv.Itoa(v.ID),
+			Name:            v.Name,
+			ProductCategory: v.ProductCategory,
+			Price:           v.Price,
+			ImageUrl:        v.ImageUrl,
+			CreatedAt:       v.CreatedAt,
+		}
+
+		res.Data = append(res.Data, merchant)
+	}
+	res.Meta.Limit = *request.Limit
+	res.Meta.Offset = *request.Offset
+	res.Meta.Total = len(res.Data)
+
+	return res, err
+}

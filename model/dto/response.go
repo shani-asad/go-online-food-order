@@ -30,3 +30,21 @@ type ResponseGetMerchants struct {
 	Data []ResponseMerchant `json:"data"`
 	Meta ResponseMeta       `json:"meta"`
 }
+
+type ResponseCreateMerchantItem struct {
+	ItemID string `json:"itemId"`
+}
+
+type ResponseGetItems struct {
+	ItemID          string    `json:"itemId"`
+	Name            string    `json:"name"`
+	ProductCategory string    `json:"productCategory"`
+	Price           int       `json:"price"`
+	ImageUrl        string    `json:"imageUrl"`
+	CreatedAt       time.Time `json:"craetedAt"`
+}
+
+type ResponseGetMerchantItems struct {
+	Data []ResponseGetItems `json:"data"`
+	Meta ResponseMeta       `json:"meta"`
+}

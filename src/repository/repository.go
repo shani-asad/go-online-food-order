@@ -15,4 +15,6 @@ type UserRepositoryInterface interface {
 type MerchantRepositoryInterface interface {
 	CreateMerchant(ctx context.Context, data database.Merchant) (id int, err error)
 	GetMerchants(ctx context.Context, filter dto.RequestGetMerchant) ([]database.Merchant, error)
+	CreateMerchantItem(ctx context.Context, data database.Item) (id int, err error)
+	GetMerchantItems(ctx context.Context, filter dto.RequestGetMerchantItems) ([]database.Item, error)
 }
