@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"log"
 	"online-food/app/server"
 	"online-food/db"
 	"online-food/helpers"
@@ -16,20 +15,13 @@ import (
 	"os"
 
 	"github.com/gin-gonic/gin"
-	"github.com/golang-migrate/migrate/v4"
-	_ "github.com/golang-migrate/migrate/v4/database/postgres"
-	_ "github.com/golang-migrate/migrate/v4/source/file"
+	// "github.com/golang-migrate/migrate/v4"
+	// _ "github.com/golang-migrate/migrate/v4/database/postgres"
+	// _ "github.com/golang-migrate/migrate/v4/source/file"
 )
 
 func main() {
 	r := server.InitServer()
-
-	// godotenv.Load()
-	// err := godotenv.Load()
-	// if err != nil {
-	// 	fmt.Println("Error loading .env file:", err)
-	// 	return
-	// }
 
 	dbName := os.Getenv("DB_NAME")
 	dbPort := os.Getenv("DB_PORT")
@@ -52,18 +44,18 @@ func main() {
 
 	db := db.InitPostgreDB(postgreConfig)
 
-	//run migrations
-	m, err := migrate.New(os.Getenv("MIGRATION_PATH"), os.Getenv("DATABASE_URL"))
-	if err != nil {
-		log.Fatal("Error creating migration instance: ", err)
-	}
+	// //run migrations
+	// m, err := migrate.New(os.Getenv("MIGRATION_PATH"), os.Getenv("DATABASE_URL"))
+	// if err != nil {
+	// 	log.Fatal("Error creating migration instance: ", err)
+	// }
 
-	//Run the migration up to the latest version
-	if err := m.Up(); err != nil && err != migrate.ErrNoChange {
-		log.Fatal("Error applying migrations:", err)
-	}
+	// //Run the migration up to the latest version
+	// if err := m.Up(); err != nil && err != migrate.ErrNoChange {
+	// 	log.Fatal("Error applying migrations:", err)
+	// }
 
-	fmt.Println("Migration successfully applied")
+	// fmt.Println("Migration successfully applied")
 
 	authHelper := helpers.NewAuthHelper()
 
@@ -77,11 +69,13 @@ func main() {
 	// USECASE
 	merchantUsecase := usecase.NewMerchantUsecase(merchantRepository)
 	authUsecase := usecase.NewAuthUsecase(userRepository, authHelper)
+	purchaseUseCase := usecase.NewPurchaseUsecase(merchantRepository)
 
 	// HANDLER
 	authHandler := handler.NewAuthHandler(authUsecase)
 	imageHandler := handler.NewImageHandler()
 	merchantHandler := handler.NewMerchantHandler(merchantUsecase)
+	purchaseHandler := handler.NewPurchaseHandler(purchaseUseCase)
 
 	// ROUTE
 	r.GET("/health", func(c *gin.Context) {
@@ -111,7 +105,7 @@ func main() {
 	authorized.POST("/image", imageHandler.UploadImage)
 
 	// purchase
-	// authorized.GET("/merchants/nearby/:lat/:long". purchaseHandler.getNearbyMerchants)
+	authorized.GET("/merchants/nearby/:lat/:long", purchaseHandler.GetNearbyMerchants)
 
 	r.Run()
 }

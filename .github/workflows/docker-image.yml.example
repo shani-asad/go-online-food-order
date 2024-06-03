@@ -39,7 +39,7 @@ jobs:
         FAMILY=[teamname]-service-task-definition
         CONTAINER_NAME=[your-container-name]
         ECR_IMAGE=${{ secrets.AWS_ECR_REGISTRY }}/[teamname]-repository:latest
-        TASK_ROLE_ARN=arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/projectsprint_ecs_task_role
+        TASK_ROLE_ARN=arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/pProjectsprint_ecs_task_role
         EXECUTION_ROLE_ARN=arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/projectsprint_ecs_task_execution_role
         CPU=256
         MEMORY=512

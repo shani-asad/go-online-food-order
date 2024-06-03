@@ -48,3 +48,20 @@ type ResponseGetMerchantItems struct {
 	Data []ResponseGetItems `json:"data"`
 	Meta ResponseMeta       `json:"meta"`
 }
+type Item struct {
+	ItemId			string	`json:"itemId"`
+	Name			string	`json:"name"`
+	ProductCategory	string	`json:"productCategory"`
+	Price			int		`json:"price"`
+	ImageUrl		string	`json:"imageUrl"`
+	CreatedAt		string	`json:"createdAt"`
+}
+type NearbyMerchants struct {
+	Merchant	ResponseMerchant	`json:"merchant"`
+	Items		[]Item				`json:"items"`
+}
+
+type ResponseNearbyMerchants struct {
+	Data	[]NearbyMerchants	`json:"data"`
+	Meta	ResponseMeta		`json:"meta"`
+}

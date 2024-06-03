@@ -184,3 +184,27 @@ func (r *MerchantRepository) GetMerchantItems(ctx context.Context, filter dto.Re
 
 	return items, nil
 }
+func (r *MerchantRepository) GetNearbyMerchants(ctx context.Context, long float64, lat float64, filter dto.RequestNearbyMerchants) (response dto.ResponseNearbyMerchants, err error) {
+	query := `
+	SELECT id, name, merchant_category, image_url, location_lat, location_long, created_at, updated_at
+	FROM merchants
+	WHERE 1=1
+	ORDER BY earth_distance(ll_to_earth($1, $2), earth_location)
+	LIMIT 5;
+	`
+
+	if filter.MerchantId != nil {
+		query += fmt.Sprintf(" AND id = %v", filter.MerchantId)
+	}
+	
+	if filter.MerchantCategory != nil {
+		query += fmt.Sprintf(" AND id = %v", filter.MerchantCategory)
+	}
+
+	if filter.MerchantId != nil {
+		query += fmt.Sprintf(" AND id = %v", filter.MerchantId)
+	}
+
+	x := dto.ResponseNearbyMerchants{}
+	return x, nil
+}

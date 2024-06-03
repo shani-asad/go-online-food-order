@@ -19,3 +19,7 @@ type MerchantHandlerInterface interface {
 	CreateMerchantItem(c *gin.Context)
 	GetMerchantItems(c *gin.Context)
 }
+
+type PurchaseHandlerInterface interface {
+	GetNearbyMerchants(c *gin.Context)
+}

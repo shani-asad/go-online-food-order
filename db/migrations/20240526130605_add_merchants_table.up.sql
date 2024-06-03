@@ -5,6 +5,7 @@ CREATE TABLE merchants (
     image_url TEXT NOT NULL,
     location_lat FLOAT NOT NULL,
     location_long FLOAT NOT NULL,
+    earth_location CUBE,
     created_at timestamp default CURRENT_TIMESTAMP,
     updated_at timestamp
 );

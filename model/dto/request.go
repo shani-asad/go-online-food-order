@@ -51,3 +51,10 @@ type RequestGetMerchantItems struct {
 type RequestBindUrlID struct {
 	ID int `uri:"id" binding:"required"`
 }
+type RequestNearbyMerchants struct {
+	MerchantId			*string	`json:"merchantId"`
+	Limit				*int		`json:"limit"`
+	Offset				*int		`json:"offset"`
+	Name				*string	`json:"name"`
+	MerchantCategory	*string	`json:"merchantCategory"`
+}
