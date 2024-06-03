@@ -101,3 +101,11 @@ func (r *MerchantRepository) GetMerchants(ctx context.Context, filter dto.Reques
 
 	return merchants, nil
 }
+
+func (r *MerchantRepository) CreateMerchantItem(ctx context.Context, data database.Item) (id int, err error) {
+	return id, err
+}
+
+func (r *MerchantRepository) GetMerchantItems(ctx context.Context, data database.Item) ([]database.Item, error) {
+	return []database.Item{}, nil
+}

@@ -83,6 +83,14 @@ func (h *MerchantHandler) GetMerchants(c *gin.Context) {
 	c.JSON(200, res)
 }
 
+func (h *MerchantHandler) CreateMerchantItem(c *gin.Context) {
+	c.JSON(201, nil)
+}
+
+func (h *MerchantHandler) GetMerchantItems(c *gin.Context) {
+	c.JSON(200, nil)
+}
+
 func validateCompleteURL(fl validator.FieldLevel) bool {
 	urlString := fl.Field().String()
 	// Regular expression to match a complete URL with scheme and valid host

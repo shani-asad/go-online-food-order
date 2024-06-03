@@ -63,3 +63,13 @@ func (u *MerchantUsecase) GetMerchants(request dto.RequestGetMerchant) (res dto.
 
 	return res, err
 }
+
+func (u *MerchantUsecase) CreateMerchantItem(request dto.RequestCreateMerchantItem) (res dto.ResponseCreateMerchantItem, err error) {
+	return res, err
+}
+
+func (u *MerchantUsecase) GetMerchantItems(request dto.RequestGetMerchantItems) (res dto.ResponseGetMerchantItems, err error) {
+	return res, err
+}
+
+
