@@ -36,14 +36,18 @@ type RequestCreateMerchantItem struct {
 	Name            string  `json:"name" validate:"required,min=2,max=30"`
 	ProductCategory string  `json:"productCategory" validate:"required,oneof=Beverage Food Snack Condiments Additions"`
 	Price           float64 `json:"price" validate:"required,min=1"`
-	ImageUrl        string  `json:"imageUrl" validate:"required,urlImage"`
+	ImageUrl        string  `json:"imageUrl" validate:"required,completeURL"`
 }
 
 type RequestGetMerchantItems struct {
-	ItemID          string `json:"itemId" validate:"omitempty"`
-	Limit           int    `json:"limit" validate:"omitempty,min=1"`
-	Offset          int    `json:"offset" validate:"omitempty,min=0"`
-	Name            string `json:"name" validate:"omitempty"`
-	ProductCategory string `json:"productCategory" validate:"omitempty,oneof=Beverage Food Snack Condiments Additions"`
-	CreatedAt       string `json:"createdAt" validate:"omitempty,oneof=asc desc"`
+	ItemID          *string `json:"itemId" validate:"omitempty"`
+	Limit           *int    `json:"limit" validate:"omitempty,min=1"`
+	Offset          *int    `json:"offset" validate:"omitempty,min=0"`
+	Name            *string `json:"name" validate:"omitempty"`
+	ProductCategory *string `json:"productCategory" validate:"omitempty,oneof=Beverage Food Snack Condiments Additions"`
+	CreatedAt       *string `json:"createdAt" validate:"omitempty,oneof=asc desc"`
+}
+
+type RequestBindUrlID struct {
+	ID int `uri:"id" binding:"required"`
 }
