@@ -92,20 +92,21 @@ func main() {
 	authorized := r.Group("")
 	authorized.Use(middleware.AuthMiddleware)
 
-	// IT user only
+	// admin only
 	adminAuthorized := authorized.Group("")
 	adminAuthorized.Use(middleware.RoleMiddleware("admin"))
-	r.POST("/admin/merchants", merchantHandler.CreateMerchant)
-	r.GET("/admin/merchants", merchantHandler.GetMerchants)
+	adminAuthorized.POST("/admin/merchants", merchantHandler.CreateMerchant)
+	adminAuthorized.GET("/admin/merchants", merchantHandler.GetMerchants)
 
-	r.POST("/admin/merchants/:id/items", merchantHandler.CreateMerchantItem)
-	r.GET("/admin/merchants/:id/items", merchantHandler.GetMerchantItems)
+	adminAuthorized.POST("/admin/merchants/:id/items", merchantHandler.CreateMerchantItem)
+	adminAuthorized.GET("/admin/merchants/:id/items", merchantHandler.GetMerchantItems)
 
 	// upload image
 	authorized.POST("/image", imageHandler.UploadImage)
 
 	// purchase
-	authorized.GET("/merchants/nearby/:lat/:long", purchaseHandler.GetNearbyMerchants)
+	// authorized.GET("/merchants/nearby/:lat/:long", purchaseHandler.GetNearbyMerchants)
+	r.GET("/merchants/nearby/:lat/:long", purchaseHandler.GetNearbyMerchants)
 
 	r.Run()
 }

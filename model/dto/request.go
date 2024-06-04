@@ -51,10 +51,11 @@ type RequestGetMerchantItems struct {
 type RequestBindUrlID struct {
 	ID int `uri:"id" binding:"required"`
 }
+
 type RequestNearbyMerchants struct {
-	MerchantId			*string	`json:"merchantId"`
-	Limit				*int		`json:"limit"`
-	Offset				*int		`json:"offset"`
-	Name				*string	`json:"name"`
-	MerchantCategory	*string	`json:"merchantCategory"`
+	MerchantId       *string `form:"merchantId" validate:"omitempty"`
+	Limit            *int    `form:"limit" validate:"omitempty,min=1"`
+	Offset           *int    `form:"offset" validate:"omitempty,min=0"`
+	Name             *string `form:"name" validate:"omitempty,max=255"`
+	MerchantCategory *string `form:"merchantCategory" validate:"omitempty,oneof=SmallRestaurant MediumRestaurant LargeRestaurant MerchandiseRestaurant BoothKiosk ConvenienceStore"`
 }

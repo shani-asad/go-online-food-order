@@ -56,6 +56,11 @@ type Item struct {
 	ImageUrl		string	`json:"imageUrl"`
 	CreatedAt		string	`json:"createdAt"`
 }
+type NearbyMerchantsDbResponse struct {
+	Merchant	ResponseMerchant	`json:"merchant"`
+	Items		Item				`json:"items"`
+}
+
 type NearbyMerchants struct {
 	Merchant	ResponseMerchant	`json:"merchant"`
 	Items		[]Item				`json:"items"`
