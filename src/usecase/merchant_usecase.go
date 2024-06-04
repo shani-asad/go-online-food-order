@@ -77,6 +77,7 @@ func (u *MerchantUsecase) CreateMerchantItem(request dto.RequestCreateMerchantIt
 		ProductCategory: request.ProductCategory,
 		Price:           int(request.Price),
 		ImageUrl:        request.ImageUrl,
+		MerchantID:      request.MerchantID,
 		CreatedAt:       time.Now(),
 	}
 

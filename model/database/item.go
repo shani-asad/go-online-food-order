@@ -8,6 +8,7 @@ type Item struct {
 	ProductCategory string
 	Price           int
 	ImageUrl        string
+	MerchantID      int
 	CreatedAt       time.Time
 	UpdatedAt       time.Time
 }

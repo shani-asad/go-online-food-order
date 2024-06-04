@@ -110,6 +110,7 @@ func (r *MerchantRepository) CreateMerchantItem(ctx context.Context, data databa
 		product_category,
 		price,
 		image_url,
+		merchant_id,
 		created_at,
 		updated_at)
 	VALUES ($1, $2, $3, $4, $5, $6, $7)
@@ -122,6 +123,7 @@ func (r *MerchantRepository) CreateMerchantItem(ctx context.Context, data databa
 		data.ProductCategory,
 		data.Price,
 		data.ImageUrl,
+		data.MerchantID,
 		data.CreatedAt,
 		data.UpdatedAt,
 	).Scan(&id)
@@ -185,6 +187,7 @@ func (r *MerchantRepository) GetMerchantItems(ctx context.Context, filter dto.Re
 
 	return items, nil
 }
+
 func (r *MerchantRepository) GetNearbyMerchants(ctx context.Context, long float64, lat float64, filter dto.RequestNearbyMerchants) (response dto.ResponseNearbyMerchants, err error) {
 
 	query := fmt.Sprintf(`
@@ -194,7 +197,7 @@ func (r *MerchantRepository) GetNearbyMerchants(ctx context.Context, long float6
 		JOIN items i ON m.id = i.merchant_id
 		WHERE 1 = 1
 	`, lat, long)
-	if filter.Name!= nil {
+	if filter.Name != nil {
 		query += fmt.Sprintf(" AND (m.name ILIKE '%%%v%%' OR i.name ILIKE '%%%v%%')", *filter.Name, *filter.Name)
 	}
 
@@ -206,7 +209,7 @@ func (r *MerchantRepository) GetNearbyMerchants(ctx context.Context, long float6
 		query += fmt.Sprintf(" AND merchant_category = %v", *filter.MerchantCategory)
 	}
 
-	query += fmt.Sprintf( "	ORDER BY earth_distance(ll_to_earth(%v, %v), earth_location)", lat, long)
+	query += fmt.Sprintf("	ORDER BY earth_distance(ll_to_earth(%v, %v), earth_location)", lat, long)
 	query += fmt.Sprintf(" LIMIT %v )", *filter.Limit)
 
 	query += `
@@ -217,7 +220,7 @@ func (r *MerchantRepository) GetNearbyMerchants(ctx context.Context, long float6
 	JOIN items i ON m.id = i.merchant_id
 	ORDER BY m.id
 	`
-	
+
 	query += fmt.Sprintf(" OFFSET %v", *filter.Offset)
 
 	fmt.Println("filter", filter)
@@ -252,13 +255,13 @@ func (r *MerchantRepository) GetNearbyMerchants(ctx context.Context, long float6
 		nearbyMerchantsDbResponse = append(nearbyMerchantsDbResponse, m)
 	}
 
-	if(len(nearbyMerchantsDbResponse) == 0) {
+	if len(nearbyMerchantsDbResponse) == 0 {
 		return dto.ResponseNearbyMerchants{
 			Data: []dto.NearbyMerchants{},
 			Meta: dto.ResponseMeta{
-				Limit: *filter.Limit,
+				Limit:  *filter.Limit,
 				Offset: *filter.Offset,
-				Total: 0,
+				Total:  0,
 			},
 		}, err
 	}
@@ -270,18 +273,18 @@ func (r *MerchantRepository) GetNearbyMerchants(ctx context.Context, long float6
 
 	log.Println("len(nearbyMerchantsDbResponse)", len(nearbyMerchantsDbResponse))
 	for idx, v := range nearbyMerchantsDbResponse {
-		if(v.Merchant.MerchantId == merchantId) {
+		if v.Merchant.MerchantId == merchantId {
 			i := v.Items
 			items = append(items, dto.Item{
-				ItemId: 			i.ItemId,
-				Name: 				i.Name,
-				ProductCategory:	i.ProductCategory,
-				Price: 				i.Price,		
-				ImageUrl: 			i.ImageUrl,	
-				CreatedAt: 			i.CreatedAt,
+				ItemId:          i.ItemId,
+				Name:            i.Name,
+				ProductCategory: i.ProductCategory,
+				Price:           i.Price,
+				ImageUrl:        i.ImageUrl,
+				CreatedAt:       i.CreatedAt,
 			})
 		}
-		if idx == len(nearbyMerchantsDbResponse) - 1 || nearbyMerchantsDbResponse[idx+1].Merchant.MerchantId != merchantId{
+		if idx == len(nearbyMerchantsDbResponse)-1 || nearbyMerchantsDbResponse[idx+1].Merchant.MerchantId != merchantId {
 			nearbyMerchant.Items = items
 			nearbyMerchant.Merchant.MerchantId = merchantId
 			nearbyMerchant.Merchant.Name = v.Merchant.Name
@@ -290,10 +293,10 @@ func (r *MerchantRepository) GetNearbyMerchants(ctx context.Context, long float6
 			nearbyMerchant.Merchant.Location = v.Merchant.Location
 			nearbyMerchant.Merchant.CreatedAt = v.Merchant.CreatedAt
 			items = []dto.Item{}
-			
+
 			nearbyMerchants = append(nearbyMerchants, nearbyMerchant)
-			
-			if idx != len(nearbyMerchantsDbResponse) - 1{
+
+			if idx != len(nearbyMerchantsDbResponse)-1 {
 				merchantId = nearbyMerchantsDbResponse[idx+1].Merchant.MerchantId
 			}
 		}
@@ -301,9 +304,9 @@ func (r *MerchantRepository) GetNearbyMerchants(ctx context.Context, long float6
 	}
 	response.Data = nearbyMerchants
 	response.Meta = dto.ResponseMeta{
-		Limit: *filter.Limit,
+		Limit:  *filter.Limit,
 		Offset: *filter.Offset,
-		Total: len(nearbyMerchants),
+		Total:  len(nearbyMerchants),
 	}
 
 	if err := rows.Err(); err != nil {

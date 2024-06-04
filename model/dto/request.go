@@ -37,6 +37,7 @@ type RequestCreateMerchantItem struct {
 	ProductCategory string  `json:"productCategory" validate:"required,oneof=Beverage Food Snack Condiments Additions"`
 	Price           float64 `json:"price" validate:"required,min=1"`
 	ImageUrl        string  `json:"imageUrl" validate:"required,completeURL"`
+	MerchantID      int     `json:"-"`
 }
 
 type RequestGetMerchantItems struct {
