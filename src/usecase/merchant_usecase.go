@@ -107,8 +107,14 @@ func (u *MerchantUsecase) GetMerchantItems(request dto.RequestGetMerchantItems) 
 
 		res.Data = append(res.Data, merchant)
 	}
-	res.Meta.Limit = *request.Limit
-	res.Meta.Offset = *request.Offset
+
+	if request.Limit != nil {
+		res.Meta.Limit = *request.Limit
+	}
+
+	if request.Limit != nil {
+		res.Meta.Offset = *request.Offset
+	}
 	res.Meta.Total = len(res.Data)
 
 	return res, err

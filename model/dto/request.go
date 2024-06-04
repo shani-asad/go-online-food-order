@@ -41,12 +41,12 @@ type RequestCreateMerchantItem struct {
 }
 
 type RequestGetMerchantItems struct {
-	ItemID          *string `json:"itemId" validate:"omitempty"`
-	Limit           *int    `json:"limit" validate:"omitempty,min=1"`
-	Offset          *int    `json:"offset" validate:"omitempty,min=0"`
-	Name            *string `json:"name" validate:"omitempty"`
-	ProductCategory *string `json:"productCategory" validate:"omitempty,oneof=Beverage Food Snack Condiments Additions"`
-	CreatedAt       *string `json:"createdAt" validate:"omitempty,oneof=asc desc"`
+	ItemID          *string `json:"itemId" form:"itemId" validate:"omitempty"`
+	Limit           *int    `json:"limit" form:"limit" validate:"omitempty,min=1"`
+	Offset          *int    `json:"offset" form:"offset" validate:"omitempty,min=0"`
+	Name            *string `json:"name" form:"name" validate:"omitempty"`
+	ProductCategory *string `json:"productCategory" form:"productCategory" validate:"omitempty,oneof=Beverage Food Snack Condiments Additions"`
+	CreatedAt       *string `json:"createdAt" form:"createdAt" validate:"omitempty,oneof=asc desc"`
 }
 
 type RequestBindUrlID struct {
