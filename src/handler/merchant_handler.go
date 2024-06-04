@@ -127,8 +127,13 @@ func (h *MerchantHandler) CreateMerchantItem(c *gin.Context) {
 		MerchantID: &merchantID,
 	})
 
-	if len(merchants.Data) <= 0 {
-		c.JSON(404, gin.H{"status": "not found", "message": err.Error()})
+	if err != nil {
+		c.JSON(500, gin.H{"status": "error", "message": "internal server error"})
+		return
+	}
+
+	if len(merchants.Data) == 0 {
+		c.JSON(404, gin.H{"status": "error", "message": "not found"})
 		return
 	}
 
