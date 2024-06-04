@@ -1,6 +1,7 @@
 CREATE TABLE items (
     id SERIAL PRIMARY KEY,
     name VARCHAR(30) NOT NULL,
+    merchant_id INTEGER,
     product_category VARCHAR(20) NOT NULL CHECK (product_category IN ('Beverage', 'Food', 'Snack', 'Condiments', 'Additions')),
     price INT NOT NULL,
     image_url TEXT NOT NULL,

@@ -17,3 +17,7 @@ type MerchantUsecaseInterface interface {
 	CreateMerchantItem(request dto.RequestCreateMerchantItem) (dto.ResponseCreateMerchantItem, error)
 	GetMerchantItems(request dto.RequestGetMerchantItems) (dto.ResponseGetMerchantItems, error)
 }
+
+type PurchaseUsecaseInterface interface {
+	GetNearbyMerchants(long float64, lat float64, param dto.RequestNearbyMerchants) (dto.ResponseNearbyMerchants, error)
+}
