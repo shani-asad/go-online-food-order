@@ -62,16 +62,17 @@ type RequestNearbyMerchants struct {
 }
 
 type OrderItem struct {
-	ItemId   string `json:"item"`
-	Quantity int    `json:"quantity"`
+    ItemId   string `json:"item" validate:"required"`
+    Quantity int    `json:"quantity" validate:"required,min=1"`
 }
+
 type Order struct {
-	MerchantId      string      `json:"merchantId"`
-	IsStartingPoint bool        `json:"isStartingPoint"`
-	Items           []OrderItem `json:"items"`
+    MerchantId      string      `json:"merchantId" validate:"required"`
+    IsStartingPoint bool        `json:"isStartingPoint"`
+    Items           []OrderItem `json:"items" validate:"required,dive"`
 }
 
 type RequestOrder struct {
-	UserLocation Location `json:"userLocation"`
-	Orders       []Order  `json:"order"`
+    UserLocation Location `json:"userLocation" validate:"required,dive"`
+    Orders       []Order  `json:"order" validate:"required,dive,validOrders"`
 }
