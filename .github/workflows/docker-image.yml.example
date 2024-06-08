@@ -1,99 +1,45 @@
-name: Deploy to ECS
+name: Build, Push Docker Image to ECR, and Deploy to ECS
 
 on:
   push:
     branches:
-      - main
+      - master
 
 jobs:
-  build-and-deploy:
+  build:
     runs-on: ubuntu-latest
 
     steps:
     - name: Checkout code
       uses: actions/checkout@v2
 
+    - name: Set up AWS credentials
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: ${{ secrets.AWS_REGION }}
+
     - name: Log in to Amazon ECR
       id: login-ecr
-      uses: aws-actions/amazon-ecr-login@v1
-
-    - name: Build Docker image
       run: |
-        IMAGE_TAG=$(git rev-parse --short HEAD)
-        docker build -t ${{ secrets.AWS_ECR_URI }}:$IMAGE_TAG .
-        docker tag ${{ secrets.AWS_ECR_URI }}:$IMAGE_TAG ${{ secrets.AWS_ECR_URI }}:latest
+        aws ecr get-login-password --region ${{ secrets.AWS_REGION }} | docker login --username AWS --password-stdin ${{ secrets.ECR_REPOSITORY }}
 
-    - name: Delete latest tag from ECR
+    - name: Build, tag, and push Docker image
+      env:
+        ECR_REPOSITORY: ${{ secrets.ECR_REPOSITORY }}
+        IMAGE_TAG: latest
       run: |
-        aws ecr batch-delete-image --repository-name [teamname]-repository --image-ids imageTag=latest || true
+        # Build the Docker image
+        docker build -t $ECR_REPOSITORY:$IMAGE_TAG .
 
-    - name: Push Docker image to Amazon ECR
+        # Tag the Docker image with the ECR repository URI
+        docker tag $ECR_REPOSITORY:$IMAGE_TAG $ECR_REPOSITORY:$IMAGE_TAG
+
+        # Push the image to ECR
+        docker push $ECR_REPOSITORY:$IMAGE_TAG
+
+    - name: Update ECS service
       run: |
-        IMAGE_TAG=$(git rev-parse --short HEAD)
-        docker push ${{ secrets.AWS_ECR_URI }}:$IMAGE_TAG
-        docker push ${{ secrets.AWS_ECR_URI }}:latest
-
-    - name: Register new task definition for the service
-      id: task-def
-      run: |
-        FAMILY=[teamname]-service-task-definition
-        CONTAINER_NAME=[your-container-name]
-        ECR_IMAGE=${{ secrets.AWS_ECR_URI }}:latest
-        TASK_ROLE_ARN=arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/pProjectsprint_ecs_task_role
-        EXECUTION_ROLE_ARN=arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/projectsprint_ecs_task_execution_role
-        CPU=256
-        MEMORY=512
-        LOG_GROUP_NAME=/ecs/[yourteamname]
-
-        TASK_DEFINITION=$(jq -n --arg FAMILY "$FAMILY" --arg CONTAINER_NAME "$CONTAINER_NAME" --arg ECR_IMAGE "$ECR_IMAGE" --arg TASK_ROLE_ARN "$TASK_ROLE_ARN" --arg EXECUTION_ROLE_ARN "$EXECUTION_ROLE_ARN" --arg CPU "$CPU" --arg MEMORY "$MEMORY" --arg LOG_GROUP_NAME "$LOG_GROUP_NAME" '
-        {
-          "family": $FAMILY,
-          "taskRoleArn": $TASK_ROLE_ARN,
-          "executionRoleArn": $EXECUTION_ROLE_ARN,
-          "networkMode": "awsvpc",
-          "containerDefinitions": [
-            {
-              "name": $CONTAINER_NAME,
-              "image": $ECR_IMAGE,
-              "essential": true,
-              "portMappings": [
-                {
-                  "containerPort": 8080,
-                  "hostPort": 8080,
-                  "protocol": "tcp"
-                }
-              ],
-              "logConfiguration": {
-                "logDriver": "awslogs",
-                "options": {
-                  "awslogs-group": $LOG_GROUP_NAME,
-                  "awslogs-region": "${{ secrets.AWS_REGION }}",
-                  "awslogs-stream-prefix": "ecs"
-                }
-              },
-              "memory": $MEMORY,
-              "cpu": $CPU
-            }
-          ],
-          "requiresCompatibilities": [
-            "FARGATE"
-          ],
-          "cpu": $CPU,
-          "memory": $MEMORY
-        }')
-
-        echo "$TASK_DEFINITION" > task-definition.json
-
-    - name: Register the task definition in ECS
-      run: |
-        aws ecs register-task-definition --cli-input-json file://task-definition.json
-
-    - name: Update ECS service to use new task definition
-      run: |
-        CLUSTER_NAME=projectsprint-cluster
-        SERVICE_NAME=[teamname]-service
-        FAMILY=[teamname]-service-task-definition
-
-        NEW_TASK_DEF_ARN=$(aws ecs list-task-definitions --family-prefix $FAMILY --sort DESC --max-items 1 --query 'taskDefinitionArns[0]' --output text)
-        
-        aws ecs update-service --cluster $CLUSTER_NAME --service $SERVICE_NAME --task-definition $NEW_TASK_DEF_ARN
+        # Update the ECS service to use the new image
+        aws ecs update-service --cluster ${{ secrets.ECS_CLUSTER_NAME }} --service ${{ secrets.ECS_SERVICE_NAME }} --force-new-deployment
