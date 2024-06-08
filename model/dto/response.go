@@ -71,8 +71,7 @@ type ResponseNearbyMerchants struct {
 	Meta	ResponseMeta		`json:"meta"`
 }
 
-
-type OrderResponse struct { 
+type ResponseOrder struct { 
 	TotalPrice						int		`json:"totalPrice"`
 	EstimatedDeliveryTimeInMinutes	int		`json:"estimatedDeliveryTimeInMinutes"`
 	CalculatedEstimateId			string	`json:"calculatedEstimateId"`

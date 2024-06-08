@@ -62,16 +62,16 @@ type RequestNearbyMerchants struct {
 }
 
 type OrderItem struct {
-	ItemId		string	`json:"item"`
-	Quantity	int		`json:"quantity"`
+	ItemId   string `json:"item"`
+	Quantity int    `json:"quantity"`
 }
 type Order struct {
-	MerchantId		string		`json:"merchantId"`
-	IsStartingPoint	bool		`json:"isStartingPoint"`
-	Items			[]OrderItem	`json:"items"`
+	MerchantId      string      `json:"merchantId"`
+	IsStartingPoint bool        `json:"isStartingPoint"`
+	Items           []OrderItem `json:"items"`
 }
 
-type OrderRequest struct {
-	UserLocation	Location	`json:"userLocation"`
-	Orders			[]Order		`json:"order"`
+type RequestOrder struct {
+	UserLocation Location `json:"userLocation"`
+	Orders       []Order  `json:"order"`
 }
