@@ -70,3 +70,10 @@ type ResponseNearbyMerchants struct {
 	Data	[]NearbyMerchants	`json:"data"`
 	Meta	ResponseMeta		`json:"meta"`
 }
+
+
+type OrderResponse struct { 
+	TotalPrice						int		`json:"totalPrice"`
+	EstimatedDeliveryTimeInMinutes	int		`json:"estimatedDeliveryTimeInMinutes"`
+	CalculatedEstimateId			string	`json:"calculatedEstimateId"`
+} 

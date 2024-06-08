@@ -60,3 +60,18 @@ type RequestNearbyMerchants struct {
 	Name             *string `form:"name" validate:"omitempty,max=255"`
 	MerchantCategory *string `form:"merchantCategory" validate:"omitempty,oneof=SmallRestaurant MediumRestaurant LargeRestaurant MerchandiseRestaurant BoothKiosk ConvenienceStore"`
 }
+
+type OrderItem struct {
+	ItemId		string	`json:"item"`
+	Quantity	int		`json:"quantity"`
+}
+type Order struct {
+	MerchantId		string		`json:"merchantId"`
+	IsStartingPoint	bool		`json:"isStartingPoint"`
+	Items			[]OrderItem	`json:"items"`
+}
+
+type OrderRequest struct {
+	UserLocation	Location	`json:"userLocation"`
+	Orders			[]Order		`json:"order"`
+}
