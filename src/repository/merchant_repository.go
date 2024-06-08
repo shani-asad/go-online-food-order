@@ -25,9 +25,10 @@ func (r *MerchantRepository) CreateMerchant(ctx context.Context, data database.M
 		image_url,
 		location_lat,
 		location_long,
+		earth_location,
 		created_at,
 		updated_at)
-	VALUES ($1, $2, $3, $4, $5, $6, $7)
+	VALUES ($1, $2, $3, $4, $5, ll_to_earth($4, $5), $6, $7)
 	RETURNING id`
 
 	err = r.db.QueryRowContext(
