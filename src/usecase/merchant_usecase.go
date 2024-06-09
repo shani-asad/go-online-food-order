@@ -119,3 +119,12 @@ func (u *MerchantUsecase) GetMerchantItems(request dto.RequestGetMerchantItems) 
 
 	return res, err
 }
+
+func (u *MerchantUsecase) GetMerchantCountByIds(ids string) (res int){
+	res = u.merchantRepository.GetMerchantCountByIds(context.TODO(), ids)
+	return res
+}
+func (u *MerchantUsecase) GetItemCountByIds(ids string) (res int){
+	res = u.merchantRepository.GetItemCountByIds(context.TODO(), ids)
+	return res
+}

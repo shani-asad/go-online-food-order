@@ -73,6 +73,6 @@ type ResponseNearbyMerchants struct {
 
 type ResponseOrder struct { 
 	TotalPrice						int		`json:"totalPrice"`
-	EstimatedDeliveryTimeInMinutes	int		`json:"estimatedDeliveryTimeInMinutes"`
+	EstimatedDeliveryTimeInMinutes	float64		`json:"estimatedDeliveryTimeInMinutes"`
 	CalculatedEstimateId			string	`json:"calculatedEstimateId"`
 } 

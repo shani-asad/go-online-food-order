@@ -10,3 +10,77 @@ migrate -database "postgres://postgres:postgres@localhost:5432/online-food?sslmo
 
 DROP
 migrate -database "postgres://postgres:postgres@localhost:5432/online-food?sslmode=disable" -path ./db/migrations -verbose drop
+
+
+insert merchants
+INSERT INTO merchants (name, merchant_category, image_url, location_lat, location_long, earth_location, updated_at) VALUES
+('Merchant1', 'SmallRestaurant', 'http://example.com/image1.jpg', 37.7749, -122.4194, CUBE(ll_to_earth(37.7749, -122.4194)), '2024-06-04 12:00:00'),
+('Merchant2', 'MediumRestaurant', 'http://example.com/image2.jpg', 37.7750, -122.4185, CUBE(ll_to_earth(37.7750, -122.4185)), '2024-06-04 12:01:00'),
+('Merchant3', 'LargeRestaurant', 'http://example.com/image3.jpg', 37.7751, -122.4176, CUBE(ll_to_earth(37.7751, -122.4176)), '2024-06-04 12:02:00'),
+('Merchant4', 'MerchandiseRestaurant', 'http://example.com/image4.jpg', 37.7752, -122.4167, CUBE(ll_to_earth(37.7752, -122.4167)), '2024-06-04 12:03:00'),
+('Merchant5', 'BoothKiosk', 'http://example.com/image5.jpg', 37.7753, -122.4158, CUBE(ll_to_earth(37.7753, -122.4158)), '2024-06-04 12:04:00'),
+('Merchant6', 'ConvenienceStore', 'http://example.com/image6.jpg', 37.7754, -122.4149, CUBE(ll_to_earth(37.7754, -122.4149)), '2024-06-04 12:05:00'),
+('Merchant7', 'SmallRestaurant', 'http://example.com/image7.jpg', 37.7755, -122.4140, CUBE(ll_to_earth(37.7755, -122.4140)), '2024-06-04 12:06:00'),
+('Merchant8', 'MediumRestaurant', 'http://example.com/image8.jpg', 37.7756, -122.4131, CUBE(ll_to_earth(37.7756, -122.4131)), '2024-06-04 12:07:00'),
+('Merchant9', 'LargeRestaurant', 'http://example.com/image9.jpg', 37.7757, -122.4122, CUBE(ll_to_earth(37.7757, -122.4122)), '2024-06-04 12:08:00'),
+('Merchant10', 'MerchandiseRestaurant', 'http://example.com/image10.jpg', 37.7758, -122.4113, CUBE(ll_to_earth(37.7758, -122.4113)), '2024-06-04 12:09:00'),
+('Merchant11', 'BoothKiosk', 'http://example.com/image11.jpg', 37.7759, -122.4104, CUBE(ll_to_earth(37.7759, -122.4104)), '2024-06-04 12:10:00'),
+('Merchant12', 'ConvenienceStore', 'http://example.com/image12.jpg', 37.7760, -122.4095, CUBE(ll_to_earth(37.7760, -122.4095)), '2024-06-04 12:11:00'),
+('Merchant13', 'SmallRestaurant', 'http://example.com/image13.jpg', 37.7761, -122.4086, CUBE(ll_to_earth(37.7761, -122.4086)), '2024-06-04 12:12:00'),
+('Merchant14', 'MediumRestaurant', 'http://example.com/image14.jpg', 37.7762, -122.4077, CUBE(ll_to_earth(37.7762, -122.4077)), '2024-06-04 12:13:00'),
+('Merchant15', 'LargeRestaurant', 'http://example.com/image15.jpg', 37.7763, -122.4068, CUBE(ll_to_earth(37.7763, -122.4068)), '2024-06-04 12:14:00');
+
+
+
+insert items
+INSERT INTO items (name, product_category, price, image_url, merchant_id, updated_at) VALUES
+('Item1', 'Beverage', 100, 'http://example.com/item1.jpg', 1, '2024-06-04 12:00:00'),
+('Item2', 'Food', 200, 'http://example.com/item2.jpg', 2, '2024-06-04 12:01:00'),
+('Item3', 'Snack', 50, 'http://example.com/item3.jpg', 3, '2024-06-04 12:02:00'),
+('Item4', 'Condiments', 30, 'http://example.com/item4.jpg', 4, '2024-06-04 12:03:00'),
+('Item5', 'Additions', 150, 'http://example.com/item5.jpg', 5, '2024-06-04 12:04:00'),
+('Item6', 'Beverage', 120, 'http://example.com/item6.jpg', 6, '2024-06-04 12:05:00'),
+('Item7', 'Food', 250, 'http://example.com/item7.jpg', 7, '2024-06-04 12:06:00'),
+('Item8', 'Snack', 80, 'http://example.com/item8.jpg', 8, '2024-06-04 12:07:00'),
+('Item9', 'Condiments', 40, 'http://example.com/item9.jpg', 9, '2024-06-04 12:08:00'),
+('Item10', 'Additions', 180, 'http://example.com/item10.jpg', 10, '2024-06-04 12:09:00'),
+('Item11', 'Beverage', 90, 'http://example.com/item11.jpg', 11, '2024-06-04 12:10:00'),
+('Item12', 'Food', 300, 'http://example.com/item12.jpg', 12, '2024-06-04 12:11:00'),
+('Item13', 'Snack', 70, 'http://example.com/item13.jpg', 13, '2024-06-04 12:12:00'),
+('Item14', 'Condiments', 25, 'http://example.com/item14.jpg', 14, '2024-06-04 12:13:00'),
+('Item15', 'Additions', 160, 'http://example.com/item15.jpg', 15, '2024-06-04 12:14:00'),
+('Item16', 'Beverage', 110, 'http://example.com/item16.jpg', 1, '2024-06-04 12:15:00'),
+('Item17', 'Food', 210, 'http://example.com/item17.jpg', 2, '2024-06-04 12:16:00'),
+('Item18', 'Snack', 60, 'http://example.com/item18.jpg', 3, '2024-06-04 12:17:00'),
+('Item19', 'Condiments', 35, 'http://example.com/item19.jpg', 4, '2024-06-04 12:18:00'),
+('Item20', 'Additions', 140, 'http://example.com/item20.jpg', 5, '2024-06-04 12:19:00'),
+('Item21', 'Beverage', 115, 'http://example.com/item21.jpg', 6, '2024-06-04 12:20:00'),
+('Item22', 'Food', 230, 'http://example.com/item22.jpg', 7, '2024-06-04 12:21:00'),
+('Item23', 'Snack', 85, 'http://example.com/item23.jpg', 8, '2024-06-04 12:22:00'),
+('Item24', 'Condiments', 45, 'http://example.com/item24.jpg', 9, '2024-06-04 12:23:00'),
+('Item25', 'Additions', 190, 'http://example.com/item25.jpg', 10, '2024-06-04 12:24:00'),
+('Item26', 'Beverage', 95, 'http://example.com/item26.jpg', 11, '2024-06-04 12:25:00'),
+('Item27', 'Food', 320, 'http://example.com/item27.jpg', 12, '2024-06-04 12:26:00'),
+('Item28', 'Snack', 75, 'http://example.com/item28.jpg', 13, '2024-06-04 12:27:00'),
+('Item29', 'Condiments', 28, 'http://example.com/item29.jpg', 14, '2024-06-04 12:28:00'),
+('Item30', 'Additions', 165, 'http://example.com/item30.jpg', 15, '2024-06-04 12:29:00'),
+('Item31', 'Beverage', 130, 'http://example.com/item31.jpg', 1, '2024-06-04 12:30:00'),
+('Item32', 'Food', 220, 'http://example.com/item32.jpg', 2, '2024-06-04 12:31:00'),
+('Item33', 'Snack', 55, 'http://example.com/item33.jpg', 3, '2024-06-04 12:32:00'),
+('Item34', 'Condiments', 38, 'http://example.com/item34.jpg', 4, '2024-06-04 12:33:00'),
+('Item35', 'Additions', 155, 'http://example.com/item35.jpg', 5, '2024-06-04 12:34:00'),
+('Item36', 'Beverage', 125, 'http://example.com/item36.jpg', 6, '2024-06-04 12:35:00'),
+('Item37', 'Food', 270, 'http://example.com/item37.jpg', 7, '2024-06-04 12:36:00'),
+('Item38', 'Snack', 95, 'http://example.com/item38.jpg', 8, '2024-06-04 12:37:00'),
+('Item39', 'Condiments', 50, 'http://example.com/item39.jpg', 9, '2024-06-04 12:38:00'),
+('Item40', 'Additions', 200, 'http://example.com/item40.jpg', 10, '2024-06-04 12:39:00'),
+('Item41', 'Beverage', 105, 'http://example.com/item41.jpg', 11, '2024-06-04 12:40:00'),
+('Item42', 'Food', 310, 'http://example.com/item42.jpg', 12, '2024-06-04 12:41:00'),
+('Item43', 'Snack', 65, 'http://example.com/item43.jpg', 13, '2024-06-04 12:42:00'),
+('Item44', 'Condiments', 30, 'http://example.com/item44.jpg', 14, '2024-06-04 12:43:00'),
+('Item45', 'Additions', 170, 'http://example.com/item45.jpg', 15, '2024-06-04 12:44:00'),
+('Item46', 'Beverage', 100, 'http://example.com/item46.jpg', 1, '2024-06-04 12:45:00'),
+('Item47', 'Food', 280, 'http://example.com/item47.jpg', 2, '2024-06-04 12:46:00'),
+('Item48', 'Snack', 90, 'http://example.com/item48.jpg', 3, '2024-06-04 12:47:00'),
+('Item49', 'Condiments', 42, 'http://example.com/item49.jpg', 4, '2024-06-04 12:48:00'),
+('Item50', 'Additions', 185, 'http://example.com/item50.jpg', 5, '2024-06-04 12:49:00');

@@ -65,17 +65,18 @@ func main() {
 	// REPOSITORY
 	userRepository := repository.NewUserRepository(db)
 	merchantRepository := repository.NewMerchantRepository(db)
+	orderRepository := repository.NewOrderRepository(db)
 
 	// USECASE
 	merchantUsecase := usecase.NewMerchantUsecase(merchantRepository)
 	authUsecase := usecase.NewAuthUsecase(userRepository, authHelper)
-	purchaseUseCase := usecase.NewPurchaseUsecase(merchantRepository)
+	purchaseUseCase := usecase.NewPurchaseUsecase(merchantRepository, orderRepository)
 
 	// HANDLER
 	authHandler := handler.NewAuthHandler(authUsecase)
 	imageHandler := handler.NewImageHandler()
 	merchantHandler := handler.NewMerchantHandler(merchantUsecase)
-	purchaseHandler := handler.NewPurchaseHandler(purchaseUseCase)
+	purchaseHandler := handler.NewPurchaseHandler(purchaseUseCase, merchantUsecase)
 
 	// ROUTE
 	r.GET("/health", func(c *gin.Context) {
@@ -106,7 +107,9 @@ func main() {
 
 	// purchase
 	// authorized.GET("/merchants/nearby/:lat/:long", purchaseHandler.GetNearbyMerchants)
-	r.GET("/merchants/nearby/:lat/:long", purchaseHandler.GetNearbyMerchants)
+	authorized.GET("/merchants/nearby/:lat/:long", purchaseHandler.GetNearbyMerchants)
+	authorized.POST("/users/estimate", purchaseHandler.CreateEstimation)
 
 	r.Run()
 }
+  
