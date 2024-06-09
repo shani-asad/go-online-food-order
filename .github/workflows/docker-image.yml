@@ -36,8 +36,9 @@ jobs:
       - name: Delete latest tag in ECR
         env:
           ECR_REPOSITORY: ${{ secrets.ECR_REPOSITORY }}
+          AWS_REGION: ${{ secrets.AWS_REGION }}
         run: |
-          aws ecr batch-delete-image --repository-name $ECR_REPOSITORY --image-ids imageTag=latest
+          aws ecr batch-delete-image --region $AWS_REGION --repository-name $ECR_REPOSITORY --image-ids imageTag=latest
 
       - name: Push Docker images to ECR
         run: |
