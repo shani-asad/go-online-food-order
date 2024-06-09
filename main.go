@@ -87,8 +87,8 @@ func main() {
 
 	r.POST("/admin/register", authHandler.Register)
 	r.POST("/admin/login", authHandler.Login)
-	r.POST("/user/register", authHandler.Register)
-	r.POST("/user/login", authHandler.Login)
+	r.POST("/users/register", authHandler.Register)
+	r.POST("/users/login", authHandler.Login)
 
 	authorized := r.Group("")
 	authorized.Use(middleware.AuthMiddleware)
@@ -107,7 +107,7 @@ func main() {
 
 	// purchase
 	// authorized.GET("/merchants/nearby/:lat/:long", purchaseHandler.GetNearbyMerchants)
-	authorized.GET("/merchants/nearby/:lat/:long", purchaseHandler.GetNearbyMerchants)
+	authorized.GET("/merchants/nearby/:latLong", purchaseHandler.GetNearbyMerchants)
 	authorized.POST("/users/estimate", purchaseHandler.CreateEstimation)
 	authorized.POST("/users/orders", purchaseHandler.CreateOrder)
 	authorized.GET("/users/orders", purchaseHandler.GetOrders)

@@ -58,6 +58,7 @@ func (h *MerchantHandler) CreateMerchant(c *gin.Context) {
 			Status:  "error",
 			Message: err.Error(),
 		})
+		return
 	}
 
 	c.JSON(201, response)
@@ -79,6 +80,7 @@ func (h *MerchantHandler) GetMerchants(c *gin.Context) {
 			Status:  "error",
 			Message: err.Error(),
 		})
+		return
 	}
 
 	c.JSON(200, res)
@@ -137,12 +139,14 @@ func (h *MerchantHandler) CreateMerchantItem(c *gin.Context) {
 		return
 	}
 
+	request.MerchantID = id.ID
 	response, err := h.iMerchantUsecase.CreateMerchantItem(request)
 	if err != nil {
 		c.JSON(500, dto.ResponseStatusAndMessage{
 			Status:  "error",
 			Message: err.Error(),
 		})
+		return
 	}
 	c.JSON(201, response)
 }
@@ -199,6 +203,7 @@ func (h *MerchantHandler) GetMerchantItems(c *gin.Context) {
 			Status:  "error",
 			Message: err.Error(),
 		})
+		return
 	}
 
 	c.JSON(200, res)

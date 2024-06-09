@@ -65,7 +65,6 @@ func CalculateShortestTime(startLat, startLon float64, destinations [][2]float64
 
     for _, perm := range permutations {
         totalDistance := h.GetHaversineDistance(startLat, startLon, perm[0][0], perm[0][1])
-        log.Println("totalDistance>>>>", totalDistance)
         for i := 0; i < len(perm)-1; i++ {
             totalDistance += h.GetHaversineDistance(perm[i][0], perm[i][1], perm[i+1][0], perm[i+1][1])
         }

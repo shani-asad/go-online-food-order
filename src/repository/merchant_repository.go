@@ -28,7 +28,7 @@ func (r *MerchantRepository) CreateMerchant(ctx context.Context, data database.M
 		earth_location,
 		created_at,
 		updated_at)
-	VALUES ($1, $2, $3, $4, $5, CUBE($4, $5), $6, $7)
+	VALUES ($1, $2, $3, $4, $5, CUBE(ll_to_earth($4, $5)), $6, $7)
 	RETURNING id`
 
 	err = r.db.QueryRowContext(
@@ -232,7 +232,7 @@ func (r *MerchantRepository) GetNearbyMerchants(ctx context.Context, long float6
 	WITH limited_merchants AS (
 		SELECT distinct m.*, earth_distance(ll_to_earth(%v, %v), earth_location)
 		FROM merchants m
-		JOIN items i ON m.id = i.merchant_id
+		LEFT JOIN items i ON m.id = i.merchant_id
 		WHERE 1 = 1
 	`, lat, long)
 	if filter.Name != nil {
@@ -244,7 +244,7 @@ func (r *MerchantRepository) GetNearbyMerchants(ctx context.Context, long float6
 	}
 
 	if filter.MerchantCategory != nil {
-		query += fmt.Sprintf(" AND merchant_category = %v", *filter.MerchantCategory)
+		query += fmt.Sprintf(" AND merchant_category = '%v'", *filter.MerchantCategory)
 	}
 
 	query += fmt.Sprintf("	ORDER BY earth_distance(ll_to_earth(%v, %v), earth_location)", lat, long)
@@ -255,7 +255,7 @@ func (r *MerchantRepository) GetNearbyMerchants(ctx context.Context, long float6
 		m.id, m.name, m.merchant_category, m.image_url, m.location_lat, m.location_long, m.created_at,
 		i.id, i.name, i.product_category, i.price, i.image_url, i.created_at
 	FROM limited_merchants m
-	JOIN items i ON m.id = i.merchant_id
+	LEFT JOIN items i ON m.id = i.merchant_id
 	ORDER BY m.id
 	`
 
@@ -267,9 +267,19 @@ func (r *MerchantRepository) GetNearbyMerchants(ctx context.Context, long float6
 	}
 	defer rows.Close()
 
+	type ItemsNullable struct {
+		ItemId          sql.NullString
+		Name            sql.NullString
+		ProductCategory sql.NullString
+		Price           sql.NullInt64
+		ImageUrl        sql.NullString
+		CreatedAt       sql.NullTime
+	}
+
 	var nearbyMerchantsDbResponse []dto.NearbyMerchantsDbResponse
 	for rows.Next() {
 		var m dto.NearbyMerchantsDbResponse
+		var i ItemsNullable
 		if err := rows.Scan(
 			&m.Merchant.MerchantId,
 			&m.Merchant.Name,
@@ -278,15 +288,35 @@ func (r *MerchantRepository) GetNearbyMerchants(ctx context.Context, long float6
 			&m.Merchant.Location.Lat,
 			&m.Merchant.Location.Long,
 			&m.Merchant.CreatedAt,
-			&m.Items.ItemId,
-			&m.Items.Name,
-			&m.Items.ProductCategory,
-			&m.Items.Price,
-			&m.Items.ImageUrl,
-			&m.Items.CreatedAt,
+			&i.ItemId,
+			&i.Name,
+			&i.ProductCategory,
+			&i.Price,
+			&i.ImageUrl,
+			&i.CreatedAt,
 		); err != nil {
 			return dto.ResponseNearbyMerchants{}, err
 		}
+
+		if i.ItemId.Valid {
+			m.Items.ItemId = i.ItemId.String
+		}
+		if i.Name.Valid {
+			m.Items.Name = i.Name.String
+		}
+		if i.ProductCategory.Valid {
+			m.Items.ProductCategory = i.ProductCategory.String
+		}
+		if i.Price.Valid {
+			m.Items.Price = int(i.Price.Int64)
+		}
+		if i.ImageUrl.Valid {
+			m.Items.ImageUrl = i.ImageUrl.String
+		}
+		if i.CreatedAt.Valid {
+			m.Items.CreatedAt = i.CreatedAt.Time
+		}
+
 		nearbyMerchantsDbResponse = append(nearbyMerchantsDbResponse, m)
 	}
 
@@ -306,7 +336,6 @@ func (r *MerchantRepository) GetNearbyMerchants(ctx context.Context, long float6
 	merchantId := nearbyMerchantsDbResponse[0].Merchant.MerchantId
 	var items []dto.Item
 
-	log.Println("len(nearbyMerchantsDbResponse)", len(nearbyMerchantsDbResponse))
 	for idx, v := range nearbyMerchantsDbResponse {
 		if v.Merchant.MerchantId == merchantId {
 			i := v.Items

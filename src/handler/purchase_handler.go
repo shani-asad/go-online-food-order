@@ -43,8 +43,11 @@ func (h *PurchaseHandler) GetNearbyMerchants(c *gin.Context) {
 		return
 	}
 
-	latStr := c.Param("lat")
-	longStr := c.Param("long")
+	latLong := c.Param("latLong")
+
+	arr := strings.Split(latLong, ",")
+	latStr := arr[0]
+	longStr := arr[1]
 
 	// Convert lat and long from strings to floats
 	lat, err := strconv.ParseFloat(latStr, 64)
@@ -118,6 +121,9 @@ func (h *PurchaseHandler) CreateEstimation(c *gin.Context) {
 			itemIds = append(itemIds, i.ItemId)
 		}
 	}
+
+	merchantIds = UniqueStrings(merchantIds)
+
 	merchantIdsString := strings.Join(merchantIds, ",")
 	merchantCount := h.iMerchantUsecase.GetMerchantCountByIds(merchantIdsString)
 
@@ -128,7 +134,6 @@ func (h *PurchaseHandler) CreateEstimation(c *gin.Context) {
 		})
 		return
 	}
-	
 	
 	itemIdsString := strings.Join(itemIds, ",")
 	itemCount := h.iMerchantUsecase.GetItemCountByIds(itemIdsString)
@@ -141,7 +146,6 @@ func (h *PurchaseHandler) CreateEstimation(c *gin.Context) {
 		return
 	}
 
-
 	userId, exist := c.Get("user_id")
 	if(!exist){
 		c.JSON(404, dto.ResponseStatusAndMessage{
@@ -151,6 +155,15 @@ func (h *PurchaseHandler) CreateEstimation(c *gin.Context) {
 		return
 	}
 	res, err := h.iPurchaseUsecase.CreateEstimation(param, userId.(string))
+
+	if res.EstimatedDeliveryTimeInMinutes == -1 {
+		c.JSON(400, dto.ResponseStatusAndMessage{
+			Status:  "error",
+			Message: err.Error(),
+		})
+		return
+	}
+
 	if err != nil {
 		c.JSON(500, dto.ResponseStatusAndMessage{
 			Status:  "error",
@@ -237,4 +250,24 @@ func (h *PurchaseHandler) GetOrders(c *gin.Context) {
 	res, _ := h.iPurchaseUsecase.GetOrders(param, userId.(string))
 
 	c.JSON(200, res)
+}
+
+func UniqueStrings(input []string) []string {
+    // Create a map to track unique values.
+    uniqueMap := make(map[string]struct{})
+    
+    // Iterate over the input slice and add each unique value to the map.
+    for _, str := range input {
+        uniqueMap[str] = struct{}{}
+    }
+
+    // Create a slice to hold the distinct values.
+    uniqueSlice := make([]string, 0, len(uniqueMap))
+    
+    // Populate the slice with the keys from the map.
+    for key := range uniqueMap {
+        uniqueSlice = append(uniqueSlice, key)
+    }
+    
+    return uniqueSlice
 }

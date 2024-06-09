@@ -56,7 +56,6 @@ func (u *PurchaseUsecase) CreateEstimation(request dto.RequestEstimate, userId s
 		return dto.ResponseOrder{}, err
 	}
 
-	log.Printf("======%+v\n", locationMap)
 	for _, v := range request.Orders {
 		merchantLat := locationMap[v.MerchantId].Lat
 		merchantLon := locationMap[v.MerchantId].Long
@@ -64,7 +63,7 @@ func (u *PurchaseUsecase) CreateEstimation(request dto.RequestEstimate, userId s
 		distance := helpers.NewDistanceHelper().GetHaversineDistance(userLat, userLong, merchantLat, merchantLon)
 		if distance > 3 {
 			log.Println("Distance: ", distance)
-			return dto.ResponseOrder{}, errors.New("merchant's distance is too far from user")
+			return dto.ResponseOrder{EstimatedDeliveryTimeInMinutes: -1}, errors.New("merchant's distance is too far from user")
 		}
 
 		if v.IsStartingPoint {

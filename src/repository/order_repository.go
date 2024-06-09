@@ -161,7 +161,6 @@ func (r *OrderRepository) GetOrders(ctx context.Context, filter dto.RequestGetOr
 
 	query += fmt.Sprintf(" OFFSET %v", *filter.Offset)
 	query += fmt.Sprintf(" LIMIT %v", *filter.Limit)
-	log.Println("query", query)
 
 	rows, err := r.db.QueryContext(ctx, query)
 	if err != nil {
