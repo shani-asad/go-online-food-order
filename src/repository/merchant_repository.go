@@ -4,9 +4,9 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
-	"log"
 	"online-food/model/database"
 	"online-food/model/dto"
+	"strconv"
 )
 
 type MerchantRepository struct {
@@ -215,15 +215,30 @@ func (r *MerchantRepository) GetMerchantLocations(ctx context.Context, ids strin
 	return locationMap, err
 }
 
-func (r *MerchantRepository) GetTotalPriceOfItems(ctx context.Context, ids string) (totalPrice int, err error) {	
-	query := fmt.Sprintf("SELECT SUM(price) FROM items WHERE id IN (%s)", ids)
+func (r *MerchantRepository) GetItemPrices(ctx context.Context, ids string) (priceMap map[string]int, err error) {
+	priceMap = make(map[string]int)
 
-	err = r.db.QueryRowContext(
-		ctx,
-		query,
-	).Scan(&totalPrice)
+	query := fmt.Sprintf("SELECT id, price FROM items WHERE id IN (%s)", ids)
 
-	return totalPrice, err
+	rows, err := r.db.QueryContext(ctx, query)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var id, price int
+		if err := rows.Scan(&id, &price); err != nil {
+			return nil, err
+		}
+		priceMap[strconv.Itoa(id)] = price
+	}
+
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+
+	return priceMap, nil
 }
 
 func (r *MerchantRepository) GetNearbyMerchants(ctx context.Context, long float64, lat float64, filter dto.RequestNearbyMerchants) (response dto.ResponseNearbyMerchants, err error) {
@@ -348,7 +363,7 @@ func (r *MerchantRepository) GetNearbyMerchants(ctx context.Context, long float6
 				CreatedAt:       i.CreatedAt,
 			})
 		}
-		if idx == len(nearbyMerchantsDbResponse) -1 || nearbyMerchantsDbResponse[idx+1].Merchant.MerchantId != merchantId {
+		if idx == len(nearbyMerchantsDbResponse)-1 || nearbyMerchantsDbResponse[idx+1].Merchant.MerchantId != merchantId {
 			nearbyMerchant.Items = items
 			nearbyMerchant.Merchant.MerchantId = merchantId
 			nearbyMerchant.Merchant.Name = v.Merchant.Name
@@ -360,7 +375,7 @@ func (r *MerchantRepository) GetNearbyMerchants(ctx context.Context, long float6
 
 			nearbyMerchants = append(nearbyMerchants, nearbyMerchant)
 
-			if idx != len(nearbyMerchantsDbResponse) -1 {
+			if idx != len(nearbyMerchantsDbResponse)-1 {
 				merchantId = nearbyMerchantsDbResponse[idx+1].Merchant.MerchantId
 			}
 		}
@@ -380,8 +395,7 @@ func (r *MerchantRepository) GetNearbyMerchants(ctx context.Context, long float6
 	return response, nil
 }
 
-
-func (r *MerchantRepository) GetMerchantCountByIds(ctx context.Context, ids string) (res int){
+func (r *MerchantRepository) GetMerchantCountByIds(ctx context.Context, ids string) (res int) {
 	query := fmt.Sprintf("SELECT count(1) FROM merchants WHERE id IN (%s)", ids)
 	err := r.db.QueryRowContext(ctx, query).Scan(&res)
 	if err != nil {
@@ -389,7 +403,7 @@ func (r *MerchantRepository) GetMerchantCountByIds(ctx context.Context, ids stri
 	}
 	return res
 }
-func (r *MerchantRepository) GetItemCountByIds(ctx context.Context, ids string) (res int){
+func (r *MerchantRepository) GetItemCountByIds(ctx context.Context, ids string) (res int) {
 	query := fmt.Sprintf("SELECT count(1) FROM items WHERE id IN (%s)", ids)
 	err := r.db.QueryRowContext(ctx, query).Scan(&res)
 	if err != nil {

@@ -105,29 +105,56 @@ func getMerchantLocations(orders []dto.Order, u *PurchaseUsecase) (map[string]dt
 	return locations, err
 }
 
+func UniqueStrings(input []string) []string {
+	uniqueMap := make(map[string]struct{})
+
+	for _, str := range input {
+		uniqueMap[str] = struct{}{}
+	}
+
+	uniqueSlice := make([]string, 0, len(uniqueMap))
+
+	for key := range uniqueMap {
+		uniqueSlice = append(uniqueSlice, key)
+	}
+
+	return uniqueSlice
+}
+
 func getTotalPrice(orders []dto.Order, u *PurchaseUsecase) (int, error) {
+	itemQuantityMap := make(map[string]int)
+	totalQ := 0
 	itemIds := []string{}
 	for _, o := range orders {
 		for _, i := range o.Items {
+			itemQuantityMap[i.ItemId] += i.Quantity
 			itemIds = append(itemIds, i.ItemId)
+			totalQ += i.Quantity
 		}
 	}
-	itemIdsString := strings.Join(itemIds, ", ")
+	distinctItemIds := UniqueStrings(itemIds)
+	itemIdsString := strings.Join(distinctItemIds, ", ")
 
-	price, err := u.merchantRepository.GetTotalPriceOfItems(context.TODO(), itemIdsString)
+	priceMap, err := u.merchantRepository.GetItemPrices(context.TODO(), itemIdsString)
+
+
+	totalPrice := 0
+	for _, v := range distinctItemIds {
+		totalPrice += priceMap[v] * itemQuantityMap[v]
+	}
 
 	if err != nil {
 		return 0, err
 	}
-	return price, nil
+	return totalPrice, nil
 }
 
-func (u *PurchaseUsecase) CreateOrder(estimateId string) (res string, err error){
+func (u *PurchaseUsecase) CreateOrder(estimateId string) (res string, err error) {
 	res, err = u.orderRepository.CreateOrder(context.TODO(), estimateId)
 	return res, err
 }
 
-func (u *PurchaseUsecase) GetOrders(filter dto.RequestGetOrders, userId string) (res []dto.ResponseGetOrders, err error){
+func (u *PurchaseUsecase) GetOrders(filter dto.RequestGetOrders, userId string) (res []dto.ResponseGetOrders, err error) {
 	res, err = u.orderRepository.GetOrders(context.TODO(), filter, userId)
 	return res, err
 }

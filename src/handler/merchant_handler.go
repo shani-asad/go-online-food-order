@@ -140,6 +140,9 @@ func (h *MerchantHandler) CreateMerchantItem(c *gin.Context) {
 	}
 
 	request.MerchantID = id.ID
+
+	log.Printf("[[[ Create Merchant Item ]]] >>> %+v", request)
+
 	response, err := h.iMerchantUsecase.CreateMerchantItem(request)
 	if err != nil {
 		c.JSON(500, dto.ResponseStatusAndMessage{

@@ -81,6 +81,8 @@ func (h *PurchaseHandler) GetNearbyMerchants(c *gin.Context) {
 func (h *PurchaseHandler) CreateEstimation(c *gin.Context) {
 	var param dto.RequestEstimate
 
+	log.Printf("param >>>>>>> %+v", param)
+
 	err := c.ShouldBindJSON(&param)
 	if err != nil {
 		log.Println("Merchant bad request (ShouldBindJSON) >> ", err)
@@ -123,6 +125,7 @@ func (h *PurchaseHandler) CreateEstimation(c *gin.Context) {
 	}
 
 	merchantIds = UniqueStrings(merchantIds)
+	itemIds = UniqueStrings(itemIds)
 
 	merchantIdsString := strings.Join(merchantIds, ",")
 	merchantCount := h.iMerchantUsecase.GetMerchantCountByIds(merchantIdsString)

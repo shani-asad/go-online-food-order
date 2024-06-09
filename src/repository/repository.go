@@ -18,7 +18,7 @@ type MerchantRepositoryInterface interface {
 	CreateMerchantItem(ctx context.Context, data database.Item) (id int, err error)
 	GetMerchantItems(ctx context.Context, filter dto.RequestGetMerchantItems) ([]database.Item, error)
 	GetMerchantLocations(ctx context.Context, merchantIdsString string) (locationMap map[string]dto.Location, err error)
-	GetTotalPriceOfItems(ctx context.Context, idsString string) (int, error)
+	GetItemPrices(ctx context.Context, idsString string) (map[string]int, error)
 	GetNearbyMerchants(ctx context.Context, long float64, lat float64, filter dto.RequestNearbyMerchants) (response dto.ResponseNearbyMerchants, err error)
 	GetMerchantCountByIds(ctx context.Context, ids string) int
 	GetItemCountByIds(ctx context.Context, ids string) int

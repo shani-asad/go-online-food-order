@@ -18,7 +18,7 @@ type ResponseMeta struct {
 }
 
 type ResponseMerchant struct {
-	MerchantId       int       `json:"merchantId"`
+	MerchantId       string    `json:"merchantId"`
 	Name             string    `json:"name"`
 	MerchantCategory string    `json:"merchantCategory"`
 	ImageUrl         string    `json:"imageUrl"`

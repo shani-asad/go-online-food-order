@@ -44,7 +44,7 @@ func (u *MerchantUsecase) GetMerchants(request dto.RequestGetMerchant) (res dto.
 
 	for _, v := range data {
 		merchant := dto.ResponseMerchant{
-			MerchantId:       v.ID,
+			MerchantId:       strconv.Itoa(v.ID),
 			Name:             v.Name,
 			MerchantCategory: v.MerchantCategory,
 			ImageUrl:         v.ImageUrl,
