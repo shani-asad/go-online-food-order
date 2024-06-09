@@ -25,7 +25,7 @@ func (h *PurchaseHandler) GetNearbyMerchants(c *gin.Context) {
 
 	err := c.ShouldBind(&param)
 	if err != nil {
-		log.Println("Merchant bad request (ShouldBindJSON) >> ", err)
+		log.Println("Merchant bad request (ShouldBind) >> ", err)
 		c.JSON(400, gin.H{"status": "bad request", "message": err.Error()})
 		return
 	}
@@ -80,9 +80,6 @@ func (h *PurchaseHandler) GetNearbyMerchants(c *gin.Context) {
 
 func (h *PurchaseHandler) CreateEstimation(c *gin.Context) {
 	var param dto.RequestEstimate
-
-	log.Printf("param >>>>>>> %+v", param)
-
 	err := c.ShouldBindJSON(&param)
 	if err != nil {
 		log.Println("Merchant bad request (ShouldBindJSON) >> ", err)
@@ -189,10 +186,24 @@ func (h *PurchaseHandler) CreateOrder(c *gin.Context) {
 		return
 	}
 
-	orderId, err := h.iPurchaseUsecase.CreateOrder(strconv.Itoa(param.CalculatedEstimateId))
+	validate := validator.New()
+	err = validate.Struct(param)
+	if err != nil {
+		for _, err := range err.(validator.ValidationErrors) {
+			log.Printf("Error: Field '%s' failed on the '%s' tag\n", err.StructField(), err.Tag())
+		}
+		c.JSON(400, dto.ResponseStatusAndMessage{
+			Status:  "error",
+			Message: err.Error(),
+		})
+		return
+	}
+
+	// orderId, err := h.iPurchaseUsecase.CreateOrder(strconv.Itoa(param.CalculatedEstimateId))
+	orderId, err := h.iPurchaseUsecase.CreateOrder(param.CalculatedEstimateId)
 	
 	if(orderId == ""){
-		c.JSON(404, dto.ResponseStatusAndMessage{
+		c.JSON(400, dto.ResponseStatusAndMessage{
 			Status:  "error",
 			Message: "estimate ID not found",
 		})
@@ -207,18 +218,21 @@ func (h *PurchaseHandler) CreateOrder(c *gin.Context) {
 		return
 	}
 
-	c.JSON(201, orderId)
+	c.JSON(201, dto.ResponseCreateOrder{
+		OrderId: orderId,
+	})
 }
 
 func (h *PurchaseHandler) GetOrders(c *gin.Context) {
 	var param dto.RequestGetOrders
-
 	err := c.ShouldBind(&param)
 	if err != nil {
 		log.Println("Merchant bad request (ShouldBindJSON) >> ", err)
 		c.JSON(400, gin.H{"status": "bad request", "message": err.Error()})
 		return
 	}
+
+	log.Println("paramparamparamparam", param)
 
 	validate := validator.New()
 	err = validate.Struct(param)

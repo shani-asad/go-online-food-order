@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"log"
 	"online-food/model/dto"
+	"strconv"
 	"time"
 )
 
@@ -156,7 +157,7 @@ func (r *OrderRepository) GetOrders(ctx context.Context, filter dto.RequestGetOr
 	}
 
 	if filter.MerchantCategory != nil {
-		query += fmt.Sprintf(" AND merchant_category = %v", *filter.MerchantCategory)
+		query += fmt.Sprintf(" AND merchant_category = '%v'", *filter.MerchantCategory)
 	}
 
 	query += fmt.Sprintf(" OFFSET %v", *filter.Offset)
@@ -194,7 +195,6 @@ func (r *OrderRepository) GetOrders(ctx context.Context, filter dto.RequestGetOr
 		dbResSlice = append(dbResSlice, dbRes)
 	}
 
-	log.Printf("====================\ndbResSlice %+v\n",dbResSlice)
 
 	res = mapDBToResponseGetOrders(dbResSlice)
 
@@ -217,7 +217,7 @@ func mapDBToResponseGetOrders(dbRecords []dto.ResponseGetOrdersDB) []dto.Respons
 
 		if _, exists := merchantMap[record.OrderId][record.MerchantId]; !exists {
 			merchantDetail := dto.MerchantDetail{
-				MerchantId:       record.MerchantId,
+				MerchantId:       strconv.Itoa(record.MerchantId),
 				Name:             record.MerchantName,
 				MerchantCategory: record.MerchantCategory,
 				ImageUrl:         record.MercahntImageUrl,

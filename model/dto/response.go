@@ -83,7 +83,7 @@ type OrderItemDetail struct {
 }
 
 type MerchantDetail struct {
-	MerchantId       int       `json:"merchantId"`
+	MerchantId       string       `json:"merchantId"`
 	Name             string    `json:"name"`
 	MerchantCategory string    `json:"merchantCategory"`
 	ImageUrl         string    `json:"imageUrl"`
@@ -95,8 +95,8 @@ type OrderDetail struct {
 	Items    []OrderItemDetail `json:"items"`
 }
 type ResponseGetOrders struct {
-	OrderId string
-	Orders  []OrderDetail
+	OrderId string	`json:"orderId"`
+	Orders  []OrderDetail	`json:"orders"`
 }
 
 type ResponseGetOrdersDB struct {
@@ -115,4 +115,8 @@ type ResponseGetOrdersDB struct {
 	ItemQuantity        int
 	ItemImageUrl        string
 	ItemCreatedAt       time.Time
+}
+
+type ResponseCreateOrder struct {
+	OrderId string `json:"orderId"`
 }

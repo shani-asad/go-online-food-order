@@ -78,13 +78,13 @@ type RequestEstimate struct {
 }
 
 type RequestOrder struct {
-	CalculatedEstimateId int `json:"calculatedEstimateId"`
+	CalculatedEstimateId string `json:"calculatedEstimateId" validate:"required"`
 }
 
 type RequestGetOrders struct {
-	MerchantId       *string `json:"merchantId" validate:"omitempty"`
-	Limit            *int    `json:"limit" validate:"omitempty,number,min=1"`
-	Offset           *int    `json:"offset" validate:"omitempty,number,min=0"`
-	Name             *string `json:"name" validate:"omitempty"`
-	MerchantCategory *string `json:"merchantCategory" validate:"omitempty,oneof=SmallRestaurant MediumRestaurant LargeRestaurant MerchandiseRestaurant BoothKiosk ConvenienceStore"`
+	MerchantId       *string `form:"merchantId" validate:"omitempty"`
+	Limit            *int    `form:"limit" validate:"omitempty,number,min=1"`
+	Offset           *int    `form:"offset" validate:"omitempty,number,min=0"`
+	Name             *string `form:"name" validate:"omitempty"`
+	MerchantCategory *string `form:"merchantCategory" validate:"omitempty,oneof=SmallRestaurant MediumRestaurant LargeRestaurant MerchandiseRestaurant BoothKiosk ConvenienceStore"`
 }
