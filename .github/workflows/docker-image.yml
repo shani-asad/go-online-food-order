@@ -40,6 +40,9 @@ jobs:
           aws ecr batch-delete-image --region $AWS_REGION --repository-name asadulhaqmshani-repository --image-ids imageTag=latest
 
       - name: Push Docker images to ECR
+        env:
+          ECR_REPOSITORY: ${{ secrets.ECR_REPOSITORY }}
+          IMAGE_TAG: ${{ github.sha }}
         run: |
           # Push the images to ECR
           docker push $ECR_REPOSITORY:$IMAGE_TAG
