@@ -16,11 +16,12 @@ type MerchantUsecaseInterface interface {
 	GetMerchants(request dto.RequestGetMerchant) (dto.ResponseGetMerchants, error)
 	CreateMerchantItem(request dto.RequestCreateMerchantItem) (dto.ResponseCreateMerchantItem, error)
 	GetMerchantItems(request dto.RequestGetMerchantItems) (dto.ResponseGetMerchantItems, error)
-	GetMerchantCountByIds(ids string) (int)
-	GetItemCountByIds(ids string) (int)
+	GetMerchantCountByIds(ids string) int
+	GetItemCountByIds(ids string) int
 }
 
 type PurchaseUsecaseInterface interface {
 	GetNearbyMerchants(long float64, lat float64, param dto.RequestNearbyMerchants) (dto.ResponseNearbyMerchants, error)
-	CreateEstimation(request dto.RequestOrder, userId string) (res dto.ResponseOrder, err error)
+	CreateEstimation(request dto.RequestEstimate, userId string) (res dto.ResponseOrder, err error)
+	CreateOrder(id string) (orderId string, err error)
 }

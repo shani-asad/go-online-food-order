@@ -16,7 +16,7 @@ func NewOrderRepository(db *sql.DB) OrderRepositoryInterface {
 	return &OrderRepository{db}
 }
 
-func (r *OrderRepository) CreateEstimation(ctx context.Context, data dto.RequestOrder, userId string) (int, error) {
+func (r *OrderRepository) CreateEstimation(ctx context.Context, data dto.RequestEstimate, userId string) (int, error) {
 	query := `
 	INSERT INTO orders (
 		user_id,
@@ -75,9 +75,44 @@ func (r *OrderRepository) CreateEstimation(ctx context.Context, data dto.Request
 	err = r.db.QueryRowContext(
 		ctx,
 		query,
-		orderId,		
+		orderId,
 		time.Now(),
 	).Scan(&estimationId)
 
 	return estimationId, err
+}
+
+func (r *OrderRepository) CreateOrder(ctx context.Context, estimationId string) (res string, err error) {
+	query := `
+	SELECT order_id FROM estimations
+	where id = $1
+	`
+	err = r.db.QueryRowContext(
+		ctx,
+		query,
+		estimationId,
+	).Scan(&res)
+
+	if(res != "") {
+		query := `
+		UPDATE orders SET already_placed = true
+		where id = $1
+		`
+		_, err := r.db.ExecContext(
+			ctx,
+			query,
+			res,
+		)
+
+		if err != nil {
+			log.Println("Error create order", err)
+			return "", err
+		}
+	}
+
+	if err != nil {
+		log.Println("Error create order", err)
+	}
+
+	return res, err
 }

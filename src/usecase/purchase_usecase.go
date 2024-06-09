@@ -27,17 +27,17 @@ func (u *PurchaseUsecase) GetNearbyMerchants(long float64, lat float64, request 
 	return res, err
 }
 
-func (u *PurchaseUsecase) CreateEstimation(request dto.RequestOrder, userId string) (res dto.ResponseOrder, err error) {
+func (u *PurchaseUsecase) CreateEstimation(request dto.RequestEstimate, userId string) (res dto.ResponseOrder, err error) {
 	id, err := u.orderRepository.CreateEstimation(context.TODO(), request, userId)
 
-	if(err != nil) {
+	if err != nil {
 		log.Println("Error create estimation", err.Error())
 		return dto.ResponseOrder{}, err
 	}
 
 	totalPrice, err := getTotalPrice(request.Orders, u)
 
-	if(err != nil) {
+	if err != nil {
 		return dto.ResponseOrder{}, err
 	}
 
@@ -50,24 +50,24 @@ func (u *PurchaseUsecase) CreateEstimation(request dto.RequestOrder, userId stri
 		userLat,
 		userLong,
 	})
-	
+
 	locationMap, err := getMerchantLocations(request.Orders, u)
-	if(err != nil) {
+	if err != nil {
 		return dto.ResponseOrder{}, err
 	}
 
-log.Printf("======%+v\n", locationMap)
+	log.Printf("======%+v\n", locationMap)
 	for _, v := range request.Orders {
 		merchantLat := locationMap[v.MerchantId].Lat
 		merchantLon := locationMap[v.MerchantId].Long
 
 		distance := helpers.NewDistanceHelper().GetHaversineDistance(userLat, userLong, merchantLat, merchantLon)
-		if(distance > 3) {
-			log.Println("Distance: ",distance )
+		if distance > 3 {
+			log.Println("Distance: ", distance)
 			return dto.ResponseOrder{}, errors.New("merchant's distance is too far from user")
 		}
 
-		if(v.IsStartingPoint){
+		if v.IsStartingPoint {
 			startLat = merchantLat
 			startLon = merchantLon
 		} else {
@@ -87,9 +87,9 @@ log.Printf("======%+v\n", locationMap)
 	)
 
 	res = dto.ResponseOrder{
-		TotalPrice: totalPrice,
+		TotalPrice:                     totalPrice,
 		EstimatedDeliveryTimeInMinutes: estimatedTime,
-		CalculatedEstimateId: strconv.Itoa(id),
+		CalculatedEstimateId:           strconv.Itoa(id),
 	}
 	return res, err
 }
@@ -117,6 +117,13 @@ func getTotalPrice(orders []dto.Order, u *PurchaseUsecase) (int, error) {
 
 	price, err := u.merchantRepository.GetTotalPriceOfItems(context.TODO(), itemIdsString)
 
-	if(err != nil) {return 0, err}
+	if err != nil {
+		return 0, err
+	}
 	return price, nil
+}
+
+func (u *PurchaseUsecase) CreateOrder(estimateId string) (res string, err error){
+	res, err = u.orderRepository.CreateOrder(context.TODO(), estimateId)
+	return res, err
 }

@@ -72,7 +72,11 @@ type Order struct {
     Items           []OrderItem `json:"items" validate:"required,dive"`
 }
 
-type RequestOrder struct {
+type RequestEstimate struct {
     UserLocation Location `json:"userLocation" validate:"required"`
     Orders       []Order  `json:"orders" validate:"required,dive"`
+}
+
+type RequestOrder struct {
+	CalculatedEstimateId	int	`json:"calculatedEstimateId"`
 }

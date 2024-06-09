@@ -76,7 +76,7 @@ func (h *PurchaseHandler) GetNearbyMerchants(c *gin.Context) {
 }
 
 func (h *PurchaseHandler) CreateEstimation(c *gin.Context) {
-	var param dto.RequestOrder
+	var param dto.RequestEstimate
 
 	err := c.ShouldBindJSON(&param)
 	if err != nil {
@@ -161,4 +161,35 @@ func (h *PurchaseHandler) CreateEstimation(c *gin.Context) {
 
 	c.JSON(200, res)
 
+}
+
+func (h *PurchaseHandler) CreateOrder(c *gin.Context) {
+	var param dto.RequestOrder
+
+	err := c.ShouldBindJSON(&param)
+	if err != nil {
+		log.Println("Merchant bad request (ShouldBindJSON) >> ", err)
+		c.JSON(400, gin.H{"status": "bad request", "message": err.Error()})
+		return
+	}
+
+	orderId, err := h.iPurchaseUsecase.CreateOrder(strconv.Itoa(param.CalculatedEstimateId))
+	
+	if err != nil {
+		c.JSON(500, dto.ResponseStatusAndMessage{
+			Status:  "error",
+			Message: err.Error(),
+		})
+		return
+	}
+
+	if(orderId == ""){
+		c.JSON(404, dto.ResponseStatusAndMessage{
+			Status:  "error",
+			Message: "estimate ID not found",
+		})
+		return
+	}
+
+	c.JSON(201, orderId)
 }
