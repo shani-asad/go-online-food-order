@@ -62,7 +62,7 @@ type RequestNearbyMerchants struct {
 }
 
 type OrderItem struct {
-    ItemId   string `json:"item" validate:"required"`
+    ItemId   string `json:"itemId" validate:"required"`
     Quantity int    `json:"quantity" validate:"required,min=1"`
 }
 
@@ -73,6 +73,6 @@ type Order struct {
 }
 
 type RequestOrder struct {
-    UserLocation Location `json:"userLocation" validate:"required,dive"`
-    Orders       []Order  `json:"order" validate:"required,dive,validOrders"`
+    UserLocation Location `json:"userLocation" validate:"required"`
+    Orders       []Order  `json:"orders" validate:"required,dive"`
 }

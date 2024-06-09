@@ -45,7 +45,7 @@ func (u *AuthUsecase) Register(request dto.RequestCreateUser, role string) (toke
 
 	fmt.Println(userData)
 
-	token, _ = u.helper.GenerateToken(userData.Username, userData.Role)
+	token, _ = u.helper.GenerateToken(userData.ID, userData.Role)
 
 	return token, err
 }
@@ -69,7 +69,7 @@ func (u *AuthUsecase) Login(request dto.RequestAuth, role string) (token string,
 		return "", 400
 	}
 
-	token, _ = u.helper.GenerateToken(userData.Username, userData.Role)
+	token, _ = u.helper.GenerateToken(userData.ID, userData.Role)
 
 	return token, 200
 }

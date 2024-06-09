@@ -28,7 +28,7 @@ func (r *MerchantRepository) CreateMerchant(ctx context.Context, data database.M
 		earth_location,
 		created_at,
 		updated_at)
-	VALUES ($1, $2, $3, $4, $5, ll_to_earth($4, $5), $6, $7)
+	VALUES ($1, $2, $3, $4, $5, CUBE($4, $5), $6, $7)
 	RETURNING id`
 
 	err = r.db.QueryRowContext(
@@ -189,6 +189,43 @@ func (r *MerchantRepository) GetMerchantItems(ctx context.Context, filter dto.Re
 	return items, nil
 }
 
+func (r *MerchantRepository) GetMerchantLocations(ctx context.Context, ids string) (locationMap map[string]dto.Location, err error) {
+	locationMap = make(map[string]dto.Location)
+
+	query := fmt.Sprintf("SELECT id, location_lat, location_long FROM merchants where id IN (%s)", ids)
+
+	rows, err := r.db.QueryContext(ctx, query)
+	if err != nil {
+		return make(map[string]dto.Location), err
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var l dto.Location
+		var merchantId string
+		if err := rows.Scan(
+			&merchantId,
+			&l.Lat,
+			&l.Long,
+		); err != nil {
+			return make(map[string]dto.Location), err
+		}
+		locationMap[merchantId] = l
+	}
+	return locationMap, err
+}
+
+func (r *MerchantRepository) GetTotalPriceOfItems(ctx context.Context, ids string) (totalPrice int, err error) {	
+	query := fmt.Sprintf("SELECT SUM(price) FROM items WHERE id IN (%s)", ids)
+
+	err = r.db.QueryRowContext(
+		ctx,
+		query,
+	).Scan(&totalPrice)
+
+	return totalPrice, err
+}
+
 func (r *MerchantRepository) GetNearbyMerchants(ctx context.Context, long float64, lat float64, filter dto.RequestNearbyMerchants) (response dto.ResponseNearbyMerchants, err error) {
 
 	query := fmt.Sprintf(`
@@ -223,9 +260,6 @@ func (r *MerchantRepository) GetNearbyMerchants(ctx context.Context, long float6
 	`
 
 	query += fmt.Sprintf(" OFFSET %v", *filter.Offset)
-
-	fmt.Println("filter", filter)
-	fmt.Println("query>>", query)
 
 	rows, err := r.db.QueryContext(ctx, query)
 	if err != nil {
@@ -315,4 +349,22 @@ func (r *MerchantRepository) GetNearbyMerchants(ctx context.Context, long float6
 	}
 
 	return response, nil
+}
+
+
+func (r *MerchantRepository) GetMerchantCountByIds(ctx context.Context, ids string) (res int){
+	query := fmt.Sprintf("SELECT count(1) FROM merchants WHERE id IN (%s)", ids)
+	err := r.db.QueryRowContext(ctx, query).Scan(&res)
+	if err != nil {
+		return 0
+	}
+	return res
+}
+func (r *MerchantRepository) GetItemCountByIds(ctx context.Context, ids string) (res int){
+	query := fmt.Sprintf("SELECT count(1) FROM items WHERE id IN (%s)", ids)
+	err := r.db.QueryRowContext(ctx, query).Scan(&res)
+	if err != nil {
+		return 0
+	}
+	return res
 }

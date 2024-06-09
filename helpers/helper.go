@@ -9,5 +9,4 @@ type AuthHelperInterface interface {
 
 type DistanceHelperInterface interface {
 	GetHaversineDistance(lat1, lon1, lat2, lon2 float64) float64
-
 }
