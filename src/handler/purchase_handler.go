@@ -175,18 +175,18 @@ func (h *PurchaseHandler) CreateOrder(c *gin.Context) {
 
 	orderId, err := h.iPurchaseUsecase.CreateOrder(strconv.Itoa(param.CalculatedEstimateId))
 	
-	if err != nil {
-		c.JSON(500, dto.ResponseStatusAndMessage{
-			Status:  "error",
-			Message: err.Error(),
-		})
-		return
-	}
-
 	if(orderId == ""){
 		c.JSON(404, dto.ResponseStatusAndMessage{
 			Status:  "error",
 			Message: "estimate ID not found",
+		})
+		return
+	}
+	
+	if err != nil {
+		c.JSON(500, dto.ResponseStatusAndMessage{
+			Status:  "error",
+			Message: err.Error(),
 		})
 		return
 	}

@@ -92,6 +92,11 @@ func (r *OrderRepository) CreateOrder(ctx context.Context, estimationId string) 
 		query,
 		estimationId,
 	).Scan(&res)
+	
+	if err != nil {
+		log.Println("Error create order 1st step", err)
+		return "", err
+	}
 
 	if(res != "") {
 		query := `
@@ -105,14 +110,11 @@ func (r *OrderRepository) CreateOrder(ctx context.Context, estimationId string) 
 		)
 
 		if err != nil {
-			log.Println("Error create order", err)
+			log.Println("Error create order 2nd step", err)
 			return "", err
 		}
 	}
 
-	if err != nil {
-		log.Println("Error create order", err)
-	}
 
 	return res, err
 }
