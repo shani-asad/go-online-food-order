@@ -193,3 +193,48 @@ func (h *PurchaseHandler) CreateOrder(c *gin.Context) {
 
 	c.JSON(201, orderId)
 }
+
+func (h *PurchaseHandler) GetOrders(c *gin.Context) {
+	var param dto.RequestGetOrders
+
+	err := c.ShouldBind(&param)
+	if err != nil {
+		log.Println("Merchant bad request (ShouldBindJSON) >> ", err)
+		c.JSON(400, gin.H{"status": "bad request", "message": err.Error()})
+		return
+	}
+
+	validate := validator.New()
+	err = validate.Struct(param)
+	if err != nil {
+		for _, err := range err.(validator.ValidationErrors) {
+			log.Printf("Error: Field '%s' failed on the '%s' tag\n", err.StructField(), err.Tag())
+		}
+		c.JSON(400, dto.ResponseStatusAndMessage{
+			Status:  "error",
+			Message: err.Error(),
+		})
+		return
+	}
+
+	defaultLimit := 5
+	defaultoffset := 0
+	if(param.Limit == nil) {param.Limit = &defaultLimit}
+	if(param.Offset == nil) {param.Offset = &defaultoffset}
+
+	userId, exist := c.Get("user_id")
+
+	if !exist {
+		c.JSON(401, dto.ResponseStatusAndMessage{
+			Status:  "error",
+			Message: "Cannot get userId",
+		})
+		return
+	}
+
+	log.Println("userId>>>", userId)
+
+	res, _ := h.iPurchaseUsecase.GetOrders(param, userId.(string))
+
+	c.JSON(200, res)
+}

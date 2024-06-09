@@ -127,3 +127,8 @@ func (u *PurchaseUsecase) CreateOrder(estimateId string) (res string, err error)
 	res, err = u.orderRepository.CreateOrder(context.TODO(), estimateId)
 	return res, err
 }
+
+func (u *PurchaseUsecase) GetOrders(filter dto.RequestGetOrders, userId string) (res []dto.ResponseGetOrders, err error){
+	res, err = u.orderRepository.GetOrders(context.TODO(), filter, userId)
+	return res, err
+}

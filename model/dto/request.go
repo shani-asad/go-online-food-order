@@ -62,21 +62,29 @@ type RequestNearbyMerchants struct {
 }
 
 type OrderItem struct {
-    ItemId   string `json:"itemId" validate:"required"`
-    Quantity int    `json:"quantity" validate:"required,min=1"`
+	ItemId   string `json:"itemId" validate:"required"`
+	Quantity int    `json:"quantity" validate:"required,min=1"`
 }
 
 type Order struct {
-    MerchantId      string      `json:"merchantId" validate:"required"`
-    IsStartingPoint bool        `json:"isStartingPoint"`
-    Items           []OrderItem `json:"items" validate:"required,dive"`
+	MerchantId      string      `json:"merchantId" validate:"required"`
+	IsStartingPoint bool        `json:"isStartingPoint"`
+	Items           []OrderItem `json:"items" validate:"required,dive"`
 }
 
 type RequestEstimate struct {
-    UserLocation Location `json:"userLocation" validate:"required"`
-    Orders       []Order  `json:"orders" validate:"required,dive"`
+	UserLocation Location `json:"userLocation" validate:"required"`
+	Orders       []Order  `json:"orders" validate:"required,dive"`
 }
 
 type RequestOrder struct {
-	CalculatedEstimateId	int	`json:"calculatedEstimateId"`
+	CalculatedEstimateId int `json:"calculatedEstimateId"`
+}
+
+type RequestGetOrders struct {
+	MerchantId       *string `json:"merchantId" validate:"omitempty"`
+	Limit            *int    `json:"limit" validate:"omitempty,number,min=1"`
+	Offset           *int    `json:"offset" validate:"omitempty,number,min=0"`
+	Name             *string `json:"name" validate:"omitempty"`
+	MerchantCategory *string `json:"merchantCategory" validate:"omitempty,oneof=SmallRestaurant MediumRestaurant LargeRestaurant MerchandiseRestaurant BoothKiosk ConvenienceStore"`
 }

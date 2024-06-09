@@ -27,4 +27,5 @@ type MerchantRepositoryInterface interface {
 type OrderRepositoryInterface interface {
 	CreateEstimation(ctx context.Context, filter dto.RequestEstimate, userId string) (int, error)
 	CreateOrder(ctx context.Context, estimationId string) (res string, err error)
+	GetOrders(ctx context.Context, filter dto.RequestGetOrders, userId string) (res []dto.ResponseGetOrders, err error)
 }

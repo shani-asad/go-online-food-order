@@ -24,4 +24,5 @@ type PurchaseHandlerInterface interface {
 	GetNearbyMerchants(c *gin.Context)
 	CreateEstimation(c *gin.Context)
 	CreateOrder(c *gin.Context)
+	GetOrders(c *gin.Context)
 }

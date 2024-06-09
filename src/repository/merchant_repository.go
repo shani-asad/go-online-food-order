@@ -319,7 +319,7 @@ func (r *MerchantRepository) GetNearbyMerchants(ctx context.Context, long float6
 				CreatedAt:       i.CreatedAt,
 			})
 		}
-		if idx == len(nearbyMerchantsDbResponse)-1 || nearbyMerchantsDbResponse[idx+1].Merchant.MerchantId != merchantId {
+		if idx == len(nearbyMerchantsDbResponse) -1 || nearbyMerchantsDbResponse[idx+1].Merchant.MerchantId != merchantId {
 			nearbyMerchant.Items = items
 			nearbyMerchant.Merchant.MerchantId = merchantId
 			nearbyMerchant.Merchant.Name = v.Merchant.Name
@@ -331,7 +331,7 @@ func (r *MerchantRepository) GetNearbyMerchants(ctx context.Context, long float6
 
 			nearbyMerchants = append(nearbyMerchants, nearbyMerchant)
 
-			if idx != len(nearbyMerchantsDbResponse)-1 {
+			if idx != len(nearbyMerchantsDbResponse) -1 {
 				merchantId = nearbyMerchantsDbResponse[idx+1].Merchant.MerchantId
 			}
 		}

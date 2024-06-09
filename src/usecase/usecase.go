@@ -24,4 +24,5 @@ type PurchaseUsecaseInterface interface {
 	GetNearbyMerchants(long float64, lat float64, param dto.RequestNearbyMerchants) (dto.ResponseNearbyMerchants, error)
 	CreateEstimation(request dto.RequestEstimate, userId string) (res dto.ResponseOrder, err error)
 	CreateOrder(id string) (orderId string, err error)
+	GetOrders(filter dto.RequestGetOrders, userId string) (res []dto.ResponseGetOrders, err error)
 }

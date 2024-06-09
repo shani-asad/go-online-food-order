@@ -110,6 +110,7 @@ func main() {
 	authorized.GET("/merchants/nearby/:lat/:long", purchaseHandler.GetNearbyMerchants)
 	authorized.POST("/users/estimate", purchaseHandler.CreateEstimation)
 	authorized.POST("/users/orders", purchaseHandler.CreateOrder)
+	authorized.GET("/users/orders", purchaseHandler.GetOrders)
 
 	r.Run()
 }

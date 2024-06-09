@@ -49,30 +49,70 @@ type ResponseGetMerchantItems struct {
 	Meta ResponseMeta       `json:"meta"`
 }
 type Item struct {
-	ItemId			string	`json:"itemId"`
-	Name			string	`json:"name"`
-	ProductCategory	string	`json:"productCategory"`
-	Price			int		`json:"price"`
-	ImageUrl		string	`json:"imageUrl"`
-	CreatedAt		string	`json:"createdAt"`
+	ItemId          string    `json:"itemId"`
+	Name            string    `json:"name"`
+	ProductCategory string    `json:"productCategory"`
+	Price           int       `json:"price"`
+	ImageUrl        string    `json:"imageUrl"`
+	CreatedAt       time.Time `json:"createdAt"`
 }
 type NearbyMerchantsDbResponse struct {
-	Merchant	ResponseMerchant	`json:"merchant"`
-	Items		Item				`json:"items"`
+	Merchant ResponseMerchant `json:"merchant"`
+	Items    Item             `json:"items"`
 }
 
 type NearbyMerchants struct {
-	Merchant	ResponseMerchant	`json:"merchant"`
-	Items		[]Item				`json:"items"`
+	Merchant ResponseMerchant `json:"merchant"`
+	Items    []Item           `json:"items"`
 }
 
 type ResponseNearbyMerchants struct {
-	Data	[]NearbyMerchants	`json:"data"`
-	Meta	ResponseMeta		`json:"meta"`
+	Data []NearbyMerchants `json:"data"`
+	Meta ResponseMeta      `json:"meta"`
 }
 
-type ResponseOrder struct { 
-	TotalPrice						int		`json:"totalPrice"`
-	EstimatedDeliveryTimeInMinutes	float64		`json:"estimatedDeliveryTimeInMinutes"`
-	CalculatedEstimateId			string	`json:"calculatedEstimateId"`
-} 
+type ResponseOrder struct {
+	TotalPrice                     int     `json:"totalPrice"`
+	EstimatedDeliveryTimeInMinutes float64 `json:"estimatedDeliveryTimeInMinutes"`
+	CalculatedEstimateId           string  `json:"calculatedEstimateId"`
+}
+
+type OrderItemDetail struct {
+	Item
+	Quantity int `json:"quantity"`
+}
+
+type MerchantDetail struct {
+	MerchantId       int       `json:"merchantId"`
+	Name             string    `json:"name"`
+	MerchantCategory string    `json:"merchantCategory"`
+	ImageUrl         string    `json:"imageUrl"`
+	Location         Location  `json:"location"`
+	CreatedAt        time.Time `json:"createdAt"`
+}
+type OrderDetail struct {
+	Merchant MerchantDetail    `json:"merchant"`
+	Items    []OrderItemDetail `json:"items"`
+}
+type ResponseGetOrders struct {
+	OrderId string
+	Orders  []OrderDetail
+}
+
+type ResponseGetOrdersDB struct {
+	OrderId             string
+	MerchantId          int
+	MerchantName        string
+	MerchantCategory    string
+	MercahntImageUrl    string
+	MerchantLocationLat float64
+	MerchantLocationLon float64
+	MerchantCreatedAt   time.Time
+	ItemId              int
+	ItemName            string
+	ItemProductCategory string
+	ItemPrice           int
+	ItemQuantity        int
+	ItemImageUrl        string
+	ItemCreatedAt       time.Time
+}
