@@ -17,3 +17,5 @@ CREATE INDEX idx_items_name ON items (name);
 
 -- Optionally, if you often search by product_category as well
 CREATE INDEX idx_items_product_category ON items (product_category);
+CREATE INDEX gfdsgfd ON items (created_at);
+CREATE INDEX trtu ON items (id);

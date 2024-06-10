@@ -24,3 +24,7 @@ CREATE TABLE merchants (
 );
 
 CREATE INDEX idx_merchants_earth_location ON merchants USING GiST (earth_location);
+CREATE INDEX xx ON merchants (merchant_category);
+CREATE INDEX xxw ON merchants (created_at);
+CREATE INDEX xdx ON merchants (name);
+CREATE INDEX xxf ON merchants (id);
