@@ -41,7 +41,7 @@ type ResponseGetItems struct {
 	ProductCategory string    `json:"productCategory"`
 	Price           int       `json:"price"`
 	ImageUrl        string    `json:"imageUrl"`
-	CreatedAt       time.Time `json:"craetedAt"`
+	CreatedAt       time.Time `json:"createdAt"`
 }
 
 type ResponseGetMerchantItems struct {
