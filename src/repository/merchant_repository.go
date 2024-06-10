@@ -67,7 +67,7 @@ func (r *MerchantRepository) GetMerchants(ctx context.Context, filter dto.Reques
 			query += " ORDER BY created_at DESC"
 		}
 	} else {
-		query += " ORDER BY created_at ASC"
+		query += " ORDER BY created_at DESC"
 	}
 
 	if filter.Limit != nil {
@@ -151,9 +151,11 @@ func (r *MerchantRepository) GetMerchantItems(ctx context.Context, filter dto.Re
 	if filter.Name != nil {
 		query += fmt.Sprintf(" AND name ILIKE '%%%s%%'", *filter.Name)
 	}
+
 	if filter.ProductCategory != nil {
-		query += fmt.Sprintf(" AND merchant_category = '%s'", *filter.ProductCategory)
+		query += fmt.Sprintf(" AND product_category = '%s'", *filter.ProductCategory)
 	}
+
 	if filter.CreatedAt != nil {
 		if *filter.CreatedAt == "asc" {
 			query += " ORDER BY created_at ASC"
@@ -161,7 +163,7 @@ func (r *MerchantRepository) GetMerchantItems(ctx context.Context, filter dto.Re
 			query += " ORDER BY created_at DESC"
 		}
 	} else {
-		query += " ORDER BY created_at ASC"
+		query += " ORDER BY created_at DESC"
 	}
 
 	if filter.Limit != nil {
