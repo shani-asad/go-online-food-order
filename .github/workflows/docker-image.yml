@@ -60,4 +60,3 @@ jobs:
         run: |
           # Update the ECS service to use the new image
           aws ecs update-service --cluster ${{ secrets.ECS_CLUSTER_NAME }} --service ${{ secrets.ECS_SERVICE_NAME }} --force-new-deployment
-          
