@@ -53,8 +53,7 @@ jobs:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
         run: |
           # Run migrations using golang-migrate
-          docker run --network host -v $(pwd)/db/migrations:/migrations migrate/migrate -path=/migrations/ -database $DATABASE_URL down
-          echo -e "y\n"
+          echo "y" | docker run --network host -v $(pwd)/db/migrations:/migrations migrate/migrate -path=/migrations/ -database $DATABASE_URL down
           docker run --network host -v $(pwd)/db/migrations:/migrations migrate/migrate -path=/migrations/ -database $DATABASE_URL up
 
       - name: Update ECS service
