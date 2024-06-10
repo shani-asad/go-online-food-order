@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"log"
 	"online-food/model/properties"
+	"time"
 
 	_ "github.com/lib/pq"
 )
@@ -19,6 +20,8 @@ func InitPostgreDB(config properties.PostgreConfig) *sql.DB {
 
 	db.SetMaxIdleConns(10)
     db.SetMaxOpenConns(20)
+	db.SetConnMaxIdleTime(time.Minute * 30)
+	db.SetConnMaxLifetime(time.Hour * 1)
 
 	return db
 }
