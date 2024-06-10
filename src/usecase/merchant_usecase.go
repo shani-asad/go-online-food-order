@@ -37,6 +37,17 @@ func (u *MerchantUsecase) CreateMerchant(request dto.RequestCreateMerchant) (res
 }
 
 func (u *MerchantUsecase) GetMerchants(request dto.RequestGetMerchant) (res dto.ResponseGetMerchants, err error) {
+	var responseMerchants []dto.ResponseMerchant
+	if request.Limit == nil {
+		defaultLimit := 5
+		request.Limit = &defaultLimit
+	}
+
+	if request.Offset == nil {
+		defaultOffset := 0
+		request.Offset = &defaultOffset
+	}
+
 	data, err := u.merchantRepository.GetMerchants(context.TODO(), request)
 	if err != nil {
 		return res, err
@@ -54,18 +65,12 @@ func (u *MerchantUsecase) GetMerchants(request dto.RequestGetMerchant) (res dto.
 			},
 			CreatedAt: v.CreatedAt,
 		}
-
-		res.Data = append(res.Data, merchant)
+		responseMerchants = append(responseMerchants, merchant)
 	}
 
-	if request.Limit != nil {
-		res.Meta.Limit = *request.Limit
-	}
-
-	if request.Offset != nil {
-		res.Meta.Offset = *request.Offset
-	}
-
+	res.Data = responseMerchants
+	res.Meta.Limit = *request.Limit
+	res.Meta.Offset = *request.Offset
 	res.Meta.Total = len(res.Data)
 
 	return res, err
@@ -90,6 +95,17 @@ func (u *MerchantUsecase) CreateMerchantItem(request dto.RequestCreateMerchantIt
 }
 
 func (u *MerchantUsecase) GetMerchantItems(request dto.RequestGetMerchantItems) (res dto.ResponseGetMerchantItems, err error) {
+	responseData := []dto.ResponseGetItems{}
+	if request.Limit == nil {
+		defaultLimit := 5
+		request.Limit = &defaultLimit
+	}
+
+	if request.Offset == nil {
+		defaultOffset := 0
+		request.Offset = &defaultOffset
+	}
+
 	data, err := u.merchantRepository.GetMerchantItems(context.TODO(), request)
 	if err != nil {
 		return res, err
@@ -105,26 +121,23 @@ func (u *MerchantUsecase) GetMerchantItems(request dto.RequestGetMerchantItems) 
 			CreatedAt:       v.CreatedAt,
 		}
 
-		res.Data = append(res.Data, merchant)
+		responseData = append(responseData, merchant)
 	}
 
-	if request.Limit != nil {
-		res.Meta.Limit = *request.Limit
-	}
-
-	if request.Limit != nil {
-		res.Meta.Offset = *request.Offset
-	}
+	res.Data = responseData
+	res.Meta.Limit = *request.Limit
+	res.Meta.Offset = *request.Offset
 	res.Meta.Total = len(res.Data)
 
 	return res, err
 }
 
-func (u *MerchantUsecase) GetMerchantCountByIds(ids string) (res int){
+func (u *MerchantUsecase) GetMerchantCountByIds(ids string) (res int) {
 	res = u.merchantRepository.GetMerchantCountByIds(context.TODO(), ids)
 	return res
 }
-func (u *MerchantUsecase) GetItemCountByIds(ids string) (res int){
+
+func (u *MerchantUsecase) GetItemCountByIds(ids string) (res int) {
 	res = u.merchantRepository.GetItemCountByIds(context.TODO(), ids)
 	return res
 }

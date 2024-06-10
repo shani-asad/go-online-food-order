@@ -29,7 +29,7 @@ type RequestGetMerchant struct {
 	Offset           *int    `json:"offset" form:"offset" validate:"omitempty,min=0"`
 	Name             *string `json:"name" form:"name"`
 	MerchantCategory *string `json:"merchantCategory" form:"merchantCategory" validate:"omitempty,oneof=SmallRestaurant MediumRestaurant LargeRestaurant MerchandiseRestaurant BoothKiosk ConvenienceStore"`
-	CreatedAt        *string `json:"createdAt" form:"createdAt" validate:"omitempty,oneof=asc desc"`
+	CreatedAt        *string `json:"createdAt" form:"createdAt" validate:"omitempty"`
 }
 
 type RequestCreateMerchantItem struct {
@@ -45,8 +45,9 @@ type RequestGetMerchantItems struct {
 	Limit           *int    `json:"limit" form:"limit" validate:"omitempty,min=1"`
 	Offset          *int    `json:"offset" form:"offset" validate:"omitempty,min=0"`
 	Name            *string `json:"name" form:"name" validate:"omitempty"`
+	MerchantID      *int    `json:"-"`
 	ProductCategory *string `json:"productCategory" form:"productCategory" validate:"omitempty,oneof=Beverage Food Snack Condiments Additions"`
-	CreatedAt       *string `json:"createdAt" form:"createdAt" validate:"omitempty,oneof=asc desc"`
+	CreatedAt       *string `json:"createdAt" form:"createdAt" validate:"omitempty"`
 }
 
 type RequestBindUrlID struct {

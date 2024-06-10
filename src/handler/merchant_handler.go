@@ -199,7 +199,7 @@ func (h *MerchantHandler) GetMerchantItems(c *gin.Context) {
 		c.JSON(404, gin.H{"status": "error", "message": "not found"})
 		return
 	}
-
+	param.MerchantID = &id.ID
 	res, err := h.iMerchantUsecase.GetMerchantItems(param)
 	if err != nil {
 		c.JSON(500, dto.ResponseStatusAndMessage{

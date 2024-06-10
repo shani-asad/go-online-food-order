@@ -54,18 +54,22 @@ func (r *MerchantRepository) GetMerchants(ctx context.Context, filter dto.Reques
 		query += fmt.Sprintf(" AND id = %v", *filter.MerchantID)
 	}
 	if filter.Name != nil {
-		query += fmt.Sprintf(" AND name LIKE '%s'", *filter.Name)
+		query += fmt.Sprintf(" AND name ILIKE '%%%s%%'", *filter.Name)
 	}
 	if filter.MerchantCategory != nil {
 		query += fmt.Sprintf(" AND merchant_category = '%s'", *filter.MerchantCategory)
 	}
+
 	if filter.CreatedAt != nil {
 		if *filter.CreatedAt == "asc" {
 			query += " ORDER BY created_at ASC"
 		} else if *filter.CreatedAt == "desc" {
 			query += " ORDER BY created_at DESC"
 		}
+	} else {
+		query += " ORDER BY created_at ASC"
 	}
+
 	if filter.Limit != nil {
 		query += fmt.Sprintf(" LIMIT %d", *filter.Limit)
 	}
@@ -133,14 +137,19 @@ func (r *MerchantRepository) CreateMerchantItem(ctx context.Context, data databa
 }
 
 func (r *MerchantRepository) GetMerchantItems(ctx context.Context, filter dto.RequestGetMerchantItems) ([]database.Item, error) {
-	query := `SELECT id, name, product_category, price, image_url, created_at, updated_at FROM items WHERE 1=1`
+	query := `SELECT id, name, product_category, price, image_url, merchant_id, created_at, updated_at FROM items WHERE 1=1`
 	args := []interface{}{}
+
+	if filter.MerchantID != nil {
+		query += fmt.Sprintf(" AND merchant_id = %v", *filter.MerchantID)
+	}
 
 	if filter.ItemID != nil {
 		query += fmt.Sprintf(" AND id = %v", *filter.ItemID)
 	}
+
 	if filter.Name != nil {
-		query += fmt.Sprintf(" AND name LIKE '%s'", *filter.Name)
+		query += fmt.Sprintf(" AND name ILIKE '%%%s%%'", *filter.Name)
 	}
 	if filter.ProductCategory != nil {
 		query += fmt.Sprintf(" AND merchant_category = '%s'", *filter.ProductCategory)
@@ -151,7 +160,10 @@ func (r *MerchantRepository) GetMerchantItems(ctx context.Context, filter dto.Re
 		} else if *filter.CreatedAt == "desc" {
 			query += " ORDER BY created_at DESC"
 		}
+	} else {
+		query += " ORDER BY created_at ASC"
 	}
+
 	if filter.Limit != nil {
 		query += fmt.Sprintf(" LIMIT %d", *filter.Limit)
 	}
@@ -174,6 +186,7 @@ func (r *MerchantRepository) GetMerchantItems(ctx context.Context, filter dto.Re
 			&item.ProductCategory,
 			&item.Price,
 			&item.ImageUrl,
+			&item.MerchantID,
 			&item.CreatedAt,
 			&item.UpdatedAt,
 		); err != nil {
@@ -262,7 +275,7 @@ func (r *MerchantRepository) GetNearbyMerchants(ctx context.Context, long float6
 		query += fmt.Sprintf(" AND merchant_category = '%v'", *filter.MerchantCategory)
 	}
 
-	query += fmt.Sprintf("	ORDER BY earth_distance(ll_to_earth(%v, %v), earth_location)", lat, long)
+	query += fmt.Sprintf(" ORDER BY earth_distance(ll_to_earth(%v, %v), earth_location)", lat, long)
 	query += fmt.Sprintf(" LIMIT %v )", *filter.Limit)
 
 	query += `
