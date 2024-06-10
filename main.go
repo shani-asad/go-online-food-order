@@ -44,6 +44,7 @@ func main() {
 
 	db := db.InitPostgreDB(postgreConfig)
 
+
 	// //run migrations
 	// m, err := migrate.New(os.Getenv("MIGRATION_PATH"), os.Getenv("DATABASE_URL"))
 	// if err != nil {

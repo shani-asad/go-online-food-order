@@ -22,3 +22,5 @@ CREATE TABLE merchants (
     created_at timestamp default CURRENT_TIMESTAMP,
     updated_at timestamp
 );
+
+CREATE INDEX idx_merchants_earth_location ON merchants USING GiST (earth_location);

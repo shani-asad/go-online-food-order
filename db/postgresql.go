@@ -17,5 +17,8 @@ func InitPostgreDB(config properties.PostgreConfig) *sql.DB {
 		log.Fatal(err)
 	}
 
+	db.SetMaxIdleConns(10)
+    db.SetMaxOpenConns(20)
+
 	return db
 }
